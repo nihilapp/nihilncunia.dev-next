@@ -1,0 +1,62 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+
+# React Query 훅 작성 규칙
+
+---
+
+## GET 요청
+
+- 훅 함수명은 'useGet'으로 시작한다.
+- useQuery에서 UseQueryOptions 타입을 import하고 options 매개변수를 제공한다.
+- useLoading, useDone을 '@/\_entities/common'에서 import하여 사용한다.
+- useQuery에서 data, isLoading, isFetching, isSuccess를 구조분해, 나머지는 ...other로 처리한다.
+- loading, done 상태를 각각 useLoading, useDone으로 관리한다.
+- 리턴 객체는 반드시 { 데이터명, loading, done, ...other } 구조를 따른다.
+- 데이터명은 의미있는 이름으로 설정한다.
+- 매개변수가 있는 경우 enabled: !!매개변수로 조건부 실행한다.
+- 훅에서 개별적으로 staleTime, gcTime 등 캐싱 설정을 하지 않는다.
+
+### GET 훅 옵션 처리
+
+- 모든 GET 훅은 매개변수로 옵션 객체를 받을 수 있어야 한다.
+- 옵션 인터페이스는 `Use[훅명]Options extends Omit<UseQueryOptions<응답타입, 에러타입, 응답타입, 쿼리키타입>, 'queryKey' | 'queryFn'>` 형태로 정의한다.
+- 옵션 객체는 기본값 `{}`를 가진다.
+- useQuery 호출 시 `...options`로 옵션을 전달한다.
+
+---
+
+## MUTATION (CREATE/UPDATE/DELETE)
+
+- 훅 함수명은 useCreate, useUpdate, useDelete로 시작한다.
+- useMutation, useQueryClient를 import한다.
+- 매개변수가 없는 함수로 정의하고 useMutation 객체를 직접 리턴한다.
+- queryClient로 관련 쿼리 invalidate 처리한다.
+- onSuccess에서 관련 쿼리 키를 invalidate한다.
+- CREATE: 리스트 쿼리만 invalidate, UPDATE: 리스트+상세 invalidate, DELETE: 리스트 invalidate.
+- mutationFn에서 복합 객체 매개변수는 인터페이스 또는 인라인 타입 사용.
+- UPDATE는 { id: string; data: UpdateType } 형태 매개변수 사용.
+
+### MUTATION 훅 옵션 처리
+
+- 모든 MUTATION 훅은 매개변수로 옵션 객체를 받을 수 있어야 한다.
+- 옵션 인터페이스는 `Use[훅명]Options extends Omit<UseMutationOptions<응답타입, 에러타입, 변수타입>, 'mutationFn'>` 형태로 정의한다.
+- 옵션 객체는 기본값 `{}`를 가진다.
+- useMutation 호출 시 `...options`로 옵션을 전달한다.
+- 기본 onSuccess 로직과 사용자 정의 옵션을 병합할 수 있도록 설계한다.
+
+---
+
+## 공통 옵션 규칙
+
+- 모든 훅은 옵션 객체를 통해 React Query의 모든 설정을 커스터마이징할 수 있어야 한다.
+- 옵션 인터페이스는 `mutationFn` 또는 `queryKey`, `queryFn`을 제외한 모든 옵션을 포함한다.
+- 에러 타입은 `AxiosError<ApiError>`로 통일한다.
+- 옵션 객체는 선택적(optional)이며 기본값을 제공한다.
+
+---
+
+> 이 규칙은 React Query 기반 데이터 패칭 및 뮤테이션의 일관성과 유지보수성을 높이기 위한 가이드입니다.
