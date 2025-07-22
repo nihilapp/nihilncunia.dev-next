@@ -8,6 +8,7 @@ import { cn } from '@/_libs';
 interface Props
   extends React.HTMLAttributes<HTMLDivElement>,
   VariantProps<typeof cssVariants> {
+  blogId: string;
   className?: string;
 }
 
@@ -20,7 +21,7 @@ const cssVariants = cva(
   }
 );
 
-export function Home({ className, ...props }: Props) {
+export function BlogAdmin({ blogId, className, ...props }: Props) {
   return (
     <div
       className={cn(
@@ -29,7 +30,7 @@ export function Home({ className, ...props }: Props) {
       )}
       {...props}
     >
-      content
+      {blogId}
     </div>
   );
 }

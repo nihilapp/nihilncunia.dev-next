@@ -1,9 +1,5 @@
-// Supabase SSR 클라이언트 생성 및 쿠키 처리를 위한 함수들 import
-import {
-  createServerClient,
-  parseCookieHeader,
-  serializeCookieHeader
-} from '@supabase/ssr';
+import { type CookieOptions, createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
 // Supabase 데이터베이스 타입 정의 import
 import type { Database } from '@/_entities/common/supabase.types';
@@ -112,6 +108,28 @@ export function serverClient(request: Request) {
     client: clientProxy,
     headers,
   };
+}
+
+export function createActionClient() {
+  const cookieStore = cookies();
+
+  return createServerClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_SUPABASE_SECRET_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value;
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          cookieStore.set({ name, value, ...options });
+        },
+        remove(name: string, options: CookieOptions) {
+          cookieStore.set({ name, value: "", ...options });
+        },
+      },
+    },
+  );
 }
 
 // 서버 클라이언트 반환 타입 정의

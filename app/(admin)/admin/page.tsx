@@ -1,17 +1,17 @@
 import React from 'react';
 
-import { Home } from '@/(common)/_components';
+import { Admin } from '@/(admin)/admin/_components';
 import { setMeta } from '@/_libs';
 
 interface Props {}
 
 export const metadata = setMeta({
-  title: `대시보드`,
-  url: `/`,
+  title: ``,
+  url: ``,
 });
 
-export default function IndexPage() {
+export default function AdminPage() {
   return (
-    <Home />
+    <Admin />
   );
 }

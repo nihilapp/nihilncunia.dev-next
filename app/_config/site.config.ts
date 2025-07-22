@@ -1,5 +1,5 @@
+import { SiteConfig } from '@/_entities/common/common.types';
 import { nihilLogo, nihilLogoWhite } from '@/_images';
-import { SiteConfig } from '@/_types/common.types';
 
 export const siteConfig: SiteConfig = {
   title: '사이트 이름',

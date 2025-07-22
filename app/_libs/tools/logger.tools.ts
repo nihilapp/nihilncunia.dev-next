@@ -26,7 +26,7 @@ export class Logger {
     level: LogLevel,
     category: string,
     message: string,
-    context?: LogContext,
+    context?: LogContext
   ): LogMessage {
     return {
       level,
@@ -40,21 +40,21 @@ export class Logger {
   private static log(logMessage: LogMessage): void {
     const { level, category, message, context, timestamp, } = logMessage;
     const prefix = `[${timestamp}] [${level.toUpperCase()}] [${category}]`;
-    
+
     switch (level) {
-      case 'error':
-        console.error(prefix, message, context || '');
-        break;
-      case 'warn':
-        console.warn(prefix, message, context || '');
-        break;
-      case 'debug':
-        if (process.env.NODE_ENV === 'development') {
-          console.debug(prefix, message, context || '');
-        }
-        break;
-      default:
-        console.log(prefix, message, context || '');
+    case 'error':
+      console.error(prefix, message, context || '');
+      break;
+    case 'warn':
+      console.warn(prefix, message, context || '');
+      break;
+    case 'debug':
+      if (process.env.NODE_ENV === 'development') {
+        console.debug(prefix, message, context || '');
+      }
+      break;
+    default:
+      console.log(prefix, message, context || '');
     }
   }
 
@@ -139,7 +139,12 @@ export class Logger {
    * 사용자 액션 로그
    */
   static userAction(action: string, userId?: string, context?: LogContext): void {
-    const userContext = userId ? { userId, ...context, } : context;
+    const userContext = userId
+      ? {
+        userId,
+        ...context,
+      }
+      : context;
     this.log(this.formatMessage('info', 'USER', `사용자 액션: ${action}`, userContext));
   }
 

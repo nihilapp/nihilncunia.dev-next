@@ -20,7 +20,7 @@ const cssVariants = cva(
   }
 );
 
-export function Home({ className, ...props }: Props) {
+export function AdminProfile({ className, ...props }: Props) {
   return (
     <div
       className={cn(
