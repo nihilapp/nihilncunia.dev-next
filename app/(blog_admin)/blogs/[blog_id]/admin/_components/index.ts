@@ -1,1 +1,9 @@
 export { BlogAdmin } from './BlogAdmin';
+export { BlogAdminCategoriesList } from './BlogAdminCategoriesList';
+export { BlogAdminCategoryNew } from './BlogAdminCategoryNew';
+export { BlogAdminPageNew } from './BlogAdminPageNew';
+export { BlogAdminPagesList } from './BlogAdminPagesList';
+export { BlogAdminPostNew } from './BlogAdminPostNew';
+export { BlogAdminPostsList } from './BlogAdminPostsList';
+export { BlogAdminTagsList } from './BlogAdminTagsList';
+export { BlogAdminTagNew } from './BlogAdminTagNew';

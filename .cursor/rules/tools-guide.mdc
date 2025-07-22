@@ -1,0 +1,48 @@
+---
+alwaysApply: true
+---
+## 2. 날짜/시간 유틸리티: Calendar
+
+- dayjs 기반의 날짜 변환, 달력 데이터, 포맷 변환 등 제공
+- 예시:
+  ```ts
+  const now = tools.calendar.getNowDate();
+  const dateInfo = tools.calendar.getDateInfo();
+  const monthArr = tools.calendar.monthArray();
+  const formatted = tools.calendar.dateToFormat(new Date());
+  ```
+
+---
+
+## 3. 암호화 유틸리티: Bcrypt
+
+- 비밀번호 해시 및 검증은 직접 구현하지 않고 아래 메소드를 사용
+- 예시:
+  ```ts
+  const hash = await tools.bcrypt.dataToHash('password');
+  const isValid = await tools.bcrypt.dataCompare(hash, 'password');
+  ```
+
+---
+
+## 4. 쿠키 유틸리티: Cookie
+
+- 서버사이드 쿠키 조작은 tools.cookie를 통해 일관성 있게 처리
+- 예시:
+  ```ts
+  await tools.cookie.set('token', 'abc', 3600);
+  const token = await tools.cookie.get('token');
+  await tools.cookie.remove('token');
+  ```
+
+---
+
+## 5. 기타
+
+- 새로운 유틸리티가 추가될 경우, 반드시 이 가이드에 시그니처와 사용 예시를 추가합니다.
+- 직접 구현이 필요한 경우에도, 기존 헬퍼를 우선적으로 검토 후 재사용을 권장합니다.
+
+---
+
+> 본 가이드는 유지보수성과 일관성을 높이기 위해 `@/_libs/tools`의 헬퍼를 적극적으로 활용하도록 안내합니다.  
+> 모든 개발자는 본 가이드를 숙지하고, 코드 작성 시 참고해야 합니다.

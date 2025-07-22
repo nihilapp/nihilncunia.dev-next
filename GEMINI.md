@@ -72,7 +72,7 @@ This file provides guidance to Gemini when working with code in this repository.
 #### Code Formatting
 - **Statement Spacing**: Add blank lines between different types of statements
 - Variable declarations can be grouped together without blank lines
-- Separate variable declarations from functions, conditionals, loops, etc. with blank lines
+- Separate variable declarations from functions, conditionals, loops, etc. with a blank line
 - Example:
   ```typescript
   const a = 1;
@@ -112,6 +112,40 @@ This file provides guidance to Gemini when working with code in this repository.
 - JWT token validation on API routes
 - bcrypt for password hashing
 - Role-based access control (USER, ADMIN, SUPER_ADMIN)
+
+## Tool Usage Guide
+> **Important**: To enhance maintainability and consistency, you should **actively use the helper functions** provided in `app/_libs/tools`. Before implementing new utility functions, always check if a suitable helper already exists.
+
+### Date/Time Utility: `tools.date`
+- Provides Day.js-based utilities for date conversion, calendar data, and formatting.
+- **Example**:
+  ```ts
+  const now = tools.date.getNowDate();
+  const dateInfo = tools.date.getDateInfo();
+  const monthArr = tools.date.monthArray();
+  const formatted = tools.date.dateToFormat(new Date());
+  ```
+
+### Encryption Utility: `tools.bcrypt`
+- Use these methods for password hashing and verification instead of implementing them directly.
+- **Example**:
+  ```ts
+  const hash = await tools.bcrypt.dataToHash('password');
+  const isValid = await tools.bcrypt.dataCompare(hash, 'password');
+  ```
+
+### Cookie Utility: `tools.cookie`
+- Handle server-side cookie manipulation consistently through `tools.cookie`.
+- **Example**:
+  ```ts
+  await tools.cookie.set('token', 'abc', 3600);
+  const token = await tools.cookie.get('token');
+  await tools.cookie.remove('token');
+  ```
+
+### General Guidelines
+- When adding a new utility, you must add its signature and usage examples to this guide.
+- Even when direct implementation is necessary, prioritize reviewing and reusing existing helpers.
 
 ## Notes
 - Project is transitioning from Prisma to Drizzle ORM

@@ -15,13 +15,15 @@ BEGIN
           profile_id,
           email,
           username,
-          role
+          role,
+          otp_secret
         )
         VALUES (
           new.id,
           new.email,
           new.raw_user_meta_data ->> 'username',
-          COALESCE((new.raw_user_meta_data ->> 'role')::public.profile_role, 'USER'::public.profile_role)
+          COALESCE((new.raw_user_meta_data ->> 'role')::public.profile_role, 'USER'::public.profile_role),
+          new.raw_user_meta_data ->> 'otp_secret'
         );
       END IF;
     END IF;
