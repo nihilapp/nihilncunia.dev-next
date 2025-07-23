@@ -10,5 +10,11 @@ export {
 } from './auth.store';
 
 export {
-  type UserSession
+  type UserSession,
+  type ActionResult,
+  type ActionError
 } from './auth.types';
+
+export {
+  useAuthCard
+} from './hooks';

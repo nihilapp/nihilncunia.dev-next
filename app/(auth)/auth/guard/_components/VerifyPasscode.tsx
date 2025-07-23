@@ -1,10 +1,15 @@
 'use client';
 
 import { cva, type VariantProps } from 'class-variance-authority';
-import React from 'react';
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import React, { useActionState, useEffect } from 'react';
 
-import { validatePasscode } from '@/_entities/auth/actions/validate-passcode.action';
+import { Input } from '@/(common)/_components/ui/input';
+import { Label } from '@/(common)/_components/ui/label';
+import { SubmitButton } from '@/(common)/_components/ui/SubmitButton';
+import { type ActionError } from '@/_entities/auth';
+import { useAuthCard } from '@/_entities/auth';
+import { validatePasscodeFormAction } from '@/_entities/auth/actions';
 import { cn } from '@/_libs';
 
 interface Props
@@ -13,78 +18,63 @@ interface Props
   className?: string;
 }
 
-const cssVariants = cva(
-  [ ``, ],
-  {
-    variants: {},
-    defaultVariants: {},
-    compoundVariants: [],
-  }
-);
+const cssVariants = cva(['space-y-4'], {
+  variants: {},
+  defaultVariants: {},
+  compoundVariants: [],
+});
+
+interface FormState {
+  success: boolean;
+  error?: ActionError;
+}
 
 export function VerifyPasscode({ className, ...props }: Props) {
-  const [
-    passcode,
-    setPasscode,
-  ] = useState('');
-  const [
-    loading,
-    setLoading,
-  ] = useState(false);
-  const [
-    error,
-    setError,
-  ] = useState<string | null>(null);
-  const [
-    success,
-    setSuccess,
-  ] = useState(false);
+  const router = useRouter();
+  const [state, action] = useActionState(validatePasscodeFormAction, {
+    success: false,
+  });
 
-  const handleVerify = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setSuccess(false);
-    try {
-      const result = await validatePasscode(passcode);
-      if (result) {
-        setSuccess(true);
-      }
-      else {
-        setError('패스코드가 올바르지 않거나 만료되었습니다.');
-      }
+  useAuthCard('패스코드 인증', '패스코드를 입력해 인증하세요.');
+
+  // 성공 시 리다이렉트
+  useEffect(() => {
+    if (state.success) {
+      router.push('/auth/guard/complete');
     }
-    catch {
-      setError('서버 오류가 발생했습니다.');
-    }
-    finally {
-      setLoading(false);
-    }
-  };
+  }, [state.success, router]);
 
   return (
     <form
-      className={cn(
-        cssVariants({}),
-        className
-      )}
+      className={cn(cssVariants({}), className)}
+      action={action}
       {...props}
-      onSubmit={handleVerify}
     >
-      <input
-        type='text'
-        placeholder='패스코드 입력'
-        value={passcode}
-        onChange={(e) => setPasscode(e.target.value)}
-        disabled={loading || success}
-      />
-      <button type='submit' disabled={loading || success}>
-        {loading
-          ? '검증 중...'
-          : '패스코드 확인'}
-      </button>
-      {error && <div>{error}</div>}
-      {success && <div>인증 성공!</div>}
+      <div className="space-y-2">
+        <Label htmlFor="passcode">패스코드</Label>
+        <Input
+          id="passcode"
+          name="passcode"
+          type="text"
+          placeholder="60자리 숫자를 입력하세요"
+          minLength={60}
+          maxLength={60}
+          autoComplete="one-time-code"
+          required
+        />
+      </div>
+
+      {state.error && (
+        <p className="text-sm text-red-500">{state.error.message}</p>
+      )}
+
+      <SubmitButton
+        disabled={state.success}
+        className="w-full"
+        loadingText="인증 중..."
+      >
+        패스코드 인증
+      </SubmitButton>
     </form>
   );
 }

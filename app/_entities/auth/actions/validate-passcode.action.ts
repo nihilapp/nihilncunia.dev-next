@@ -1,7 +1,55 @@
 'use server';
 
-import { CookieHelper } from '@/_libs/tools/cookie.tools';
-import { DateTools } from '@/_libs/tools/date.tools';
+import { type ActionError, type ActionResult } from '@/_entities/auth';
+import {
+  CookieHelper,
+  createActionError,
+  createActionSuccess,
+  DateTools
+} from '@/_libs/tools';
+
+interface FormState {
+  success: boolean;
+  error?: ActionError;
+}
+
+/**
+ * 폼 액션 함수 - useActionState에서 사용
+ */
+export async function validatePasscodeFormAction(
+  prevState: FormState,
+  formData: FormData
+): Promise<FormState> {
+  const passcode = formData.get('passcode') as string;
+
+  if (!passcode) {
+    return {
+      success: false,
+      error: {
+        code: 'FORM_VALIDATION_ERROR',
+        message: '패스코드를 입력해주세요.',
+      },
+    };
+  }
+
+  if (passcode.length !== 60) {
+    return {
+      success: false,
+      error: {
+        code: 'FORM_VALIDATION_ERROR',
+        message: '60자리 패스코드를 입력해주세요.',
+      },
+    };
+  }
+
+  const result = await validatePasscode(passcode);
+
+  if (!result.success) {
+    return { success: false, error: (result as { success: false; error: ActionError }).error, };
+  }
+
+  return { success: true, };
+}
 
 /**
  * 입력된 패스코드를 쿠키에서 읽어 검증합니다.
@@ -11,36 +59,37 @@ import { DateTools } from '@/_libs/tools/date.tools';
  * @param input 사용자가 입력한 패스코드
  * @returns 성공 여부(boolean)
  */
-export async function validatePasscode(input: string): Promise<boolean> {
-  // 쿠키에서 패스코드와 만료시각을 읽어옴
+export async function validatePasscode(
+  input: string
+): Promise<ActionResult<true>> {
   const passcode = await CookieHelper.get<string>('passcode');
   const expires = await CookieHelper.get<string>('passcode_expires');
 
-  // 패스코드 또는 만료시각이 없으면 실패
   if (!passcode || !expires) {
-    return false;
+    return createActionError(
+      'NO_PASSCODE_COOKIE',
+      '패스코드 정보가 없습니다. 다시 시도해주세요.'
+    );
   }
 
-  // 만료시각과 현재 시간 비교 (DateTools 사용)
   const now = DateTools.now();
   if (DateTools.isAfter(now, expires)) {
-    // 만료됨
     await CookieHelper.remove('passcode');
     await CookieHelper.remove('passcode_expires');
-    return false;
+    return createActionError('PASSCODE_EXPIRED', '패스코드가 만료되었습니다.');
   }
 
-  // 입력값이 패스코드와 일치하지 않으면 실패
   if (input !== passcode) {
-    return false;
+    return createActionError(
+      'PASSCODE_INCORRECT',
+      '패스코드가 올바르지 않습니다.'
+    );
   }
 
-  // 성공: 24시간 인증 쿠키 발급
   await CookieHelper.set('admin_passcode_verified', 'true', 60 * 60 * 24); // 24시간
 
-  // 패스코드 관련 쿠키 삭제(1회성)
   await CookieHelper.remove('passcode');
   await CookieHelper.remove('passcode_expires');
 
-  return true;
+  return createActionSuccess(true);
 }

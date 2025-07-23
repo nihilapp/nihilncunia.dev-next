@@ -1,12 +1,12 @@
 'use client';
 
 import { cva, type VariantProps } from 'class-variance-authority';
-import React from 'react';
-import { useState } from 'react';
-import { z } from 'zod';
+import React, { useEffect } from 'react';
+import { useActionState } from 'react';
 
-import { useAuthActions } from '@/_entities/auth';
-import { sendPasscodeEmail } from '@/_entities/auth/actions/send-passcode-email.action';
+import { SubmitButton } from '@/(common)/_components/ui/SubmitButton';
+import { useAuthActions, useAuthCard } from '@/_entities/auth';
+import { sendPasscodeFormAction } from '@/_entities/auth/actions';
 import { cn } from '@/_libs';
 
 interface Props
@@ -15,75 +15,41 @@ interface Props
   className?: string;
 }
 
-const cssVariants = cva(
-  [ ``, ],
-  {
-    variants: {},
-    defaultVariants: {},
-    compoundVariants: [],
-  }
-);
+const cssVariants = cva([``], {
+  variants: {},
+  defaultVariants: {},
+  compoundVariants: [],
+});
+
+interface FormState {
+  success: boolean;
+  step?: number;
+  error?: ActionError;
+}
 
 export function SendPasscode({ className, ...props }: Props) {
-  const { setGuardStep, } = useAuthActions();
-  const [
-    email,
-    setEmail,
-  ] = useState('');
-  const [
-    loading,
-    setLoading,
-  ] = useState(false);
-  const [
-    error,
-    setError,
-  ] = useState<string | null>(null);
+  const [state, action] = useActionState(sendPasscodeFormAction, {
+    success: false,
+  });
 
-  const handleSend = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    try {
-      // 실제 구현에서는 email을 서버로 전달해야 하지만, 현재 서버 액션 시그니처에 email 없음
-      // 임시로 패스코드만 발송
-      const result = await sendPasscodeEmail('123456');
-      if (result && result.step === 1) {
-        setGuardStep(2);
-      }
-      else {
-        setError('패스코드 발송에 실패했습니다.');
-      }
+  const { setGuardStep } = useAuthActions();
+  useAuthCard('패스코드 발송', '발송 버튼을 클릭해 패스코드를 발송하세요.');
+
+  // formAction 결과에 따라 step 업데이트
+  useEffect(() => {
+    if (state.success && state.step) {
+      setGuardStep(state.step);
     }
-    catch {
-      setError('서버 오류가 발생했습니다.');
-    }
-    finally {
-      setLoading(false);
-    }
-  };
+  }, [state.success, state.step, setGuardStep]);
 
   return (
-    <form
-      className={cn(
-        cssVariants({}),
-        className
+    <form className={cn(cssVariants({}), className)} action={action} {...props}>
+      <SubmitButton disabled={state.success} loadingText="발송 중...">
+        패스코드 발송
+      </SubmitButton>
+      {state.error && (
+        <p className="mt-2 text-sm text-red-500">{state.error.message}</p>
       )}
-      {...props}
-      onSubmit={handleSend}
-    >
-      <input
-        type='email'
-        placeholder='이메일 입력'
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        disabled={loading}
-      />
-      <button type='submit' disabled={loading}>
-        {loading
-          ? '발송 중...'
-          : '패스코드 발송'}
-      </button>
-      {error && <div>{error}</div>}
     </form>
   );
 }
