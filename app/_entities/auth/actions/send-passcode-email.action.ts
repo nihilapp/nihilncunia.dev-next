@@ -19,7 +19,7 @@ import { CookieHelper } from '@/_libs/tools/cookie.tools';
  * // 예시: 패스코드 발송 시 쿠키에 만료 시각 저장
  * // await CookieHelper.set('passcode_expires', expires, 300); // 5분
  */
-export async function sendPasscodeEmail(passcode: string): Promise<boolean> {
+export async function sendPasscodeEmail(passcode: string) {
   // 만료시간: 5분 후
   const expires = DateTime.now().plus({ minutes: 5, }).toISO();
 
@@ -47,7 +47,7 @@ export async function sendPasscodeEmail(passcode: string): Promise<boolean> {
 
   try {
     await transporter.sendMail(mailOptions);
-    return true;
+    return { step: 1, };
   }
   catch (e) {
     // TODO: 에러 로깅

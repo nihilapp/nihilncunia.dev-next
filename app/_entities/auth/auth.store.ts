@@ -6,6 +6,7 @@ import type { UserSession } from '@/_entities/auth';
 interface AuthActions {
   setSignInStep: (step: number) => void;
   setSignUpStep: (step: number) => void;
+  setGuardStep: (step: number) => void;
   signUserSession: (session: UserSession) => void;
   signOutUserSession: () => void;
   setCardTitle: (title: string) => void;
@@ -16,6 +17,7 @@ interface AuthActions {
 interface AuthState {
   signInStep: number;
   signUpStep: number;
+  guardStep: number;
   session: UserSession | null;
   cardTitle: string;
   cardDescription: string;
@@ -25,8 +27,9 @@ interface AuthState {
 
 const authStore = create<AuthState>()(
   immer((set) => ({
-    signInStep: 0,
-    signUpStep: 0,
+    signInStep: 1,
+    signUpStep: 1,
+    guardStep: 1,
     session: null,
     cardTitle: '',
     cardDescription: '',
@@ -37,6 +40,9 @@ const authStore = create<AuthState>()(
       ),
       setSignUpStep: (step) => (
         set((state) => { state.signUpStep = step; })
+      ),
+      setGuardStep: (step) => (
+        set((state) => { state.guardStep = step; })
       ),
       signUserSession: (session) => (
         set((state) => { state.session = session; })
@@ -67,6 +73,10 @@ export const useSignInStep = () => authStore(
 
 export const useSignUpStep = () => authStore(
   (state) => state.signUpStep
+);
+
+export const useGuardStep = () => authStore(
+  (state) => state.guardStep
 );
 
 export const useUserSession = () => authStore(

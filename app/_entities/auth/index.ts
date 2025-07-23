@@ -2,6 +2,7 @@ export {
   useAuthActions,
   useSignInStep,
   useSignUpStep,
+  useGuardStep,
   useUserSession,
   useCardTitle,
   useCardDescription,
