@@ -30,7 +30,9 @@ export function Profile({ username, className, ...props }: Props) {
       )}
       {...props}
     >
-      Profile Page for {username}
+      Profile Page for
+      {' '}
+      {username}
     </div>
   );
 }

@@ -1,7 +1,8 @@
 import React from 'react';
 
-import { PostList } from '@/(blog)/_components';
 import { setMeta } from '@/_libs';
+
+import { PostList } from './_components/PostList';
 
 interface Props {
   params: Promise<{ blog_id: string }>;

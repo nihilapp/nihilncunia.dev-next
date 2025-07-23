@@ -1,7 +1,8 @@
 import React from 'react';
 
-import { AdminSettings } from '@/(admin)/_components';
 import { setMeta } from '@/_libs';
+
+import { AdminSettings } from './_components/AdminSettings';
 
 interface Props {}
 
@@ -13,6 +14,5 @@ export const metadata = setMeta({
 export default function AdminSettingsPage() {
   return (
     <AdminSettings />
-    // asd
   );
 }

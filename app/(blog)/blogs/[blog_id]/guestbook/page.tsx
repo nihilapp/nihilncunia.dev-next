@@ -1,7 +1,8 @@
 import React from 'react';
 
-import { Guestbook } from '@/(blog)/_components';
 import { setMeta } from '@/_libs';
+
+import { Guestbook } from './_components/Guestbook';
 
 interface Props {
   params: Promise<{ blog_id: string }>;

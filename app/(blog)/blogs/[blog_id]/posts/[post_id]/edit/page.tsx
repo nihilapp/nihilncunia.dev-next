@@ -1,7 +1,8 @@
 import React from 'react';
 
-import { PostEdit } from '@/(blog)/_components';
 import { setMeta } from '@/_libs';
+
+import { PostEdit } from './_components/PostEdit';
 
 interface Props {
   params: Promise<{
@@ -23,9 +24,7 @@ export async function generateMetadata({ params, }: Props) {
 }
 
 export default async function BlogPostEditPage({ params, }: Props) {
-  const {
-    blog_id, post_id,
-  } = await params;
+  const { blog_id, post_id, } = await params;
 
   return (
     <PostEdit blogId={blog_id} postId={post_id} />

@@ -1,7 +1,8 @@
 import React from 'react';
 
-import { AdminBlogsList } from '@/(admin)/_components';
 import { setMeta } from '@/_libs';
+
+import { AdminBlogsList } from './_components/AdminBlogsList';
 
 interface Props {}
 

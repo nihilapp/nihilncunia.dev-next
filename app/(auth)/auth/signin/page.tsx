@@ -1,7 +1,8 @@
 import React from 'react';
 
-import { SignIn } from '@/(auth)/_components';
 import { setMeta } from '@/_libs';
+
+import { SignIn } from './_components/SignIn';
 
 interface Props {}
 

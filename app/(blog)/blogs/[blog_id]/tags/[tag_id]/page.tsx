@@ -1,7 +1,8 @@
 import React from 'react';
 
-import { TagPosts } from '@/(blog)/_components';
 import { setMeta } from '@/_libs';
+
+import { TagPosts } from './_components/TagPosts';
 
 interface Props {
   params: Promise<{

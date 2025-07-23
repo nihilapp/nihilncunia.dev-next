@@ -1,7 +1,8 @@
 import React from 'react';
 
-import { MonthlyArchive } from '@/(blog)/_components';
 import { setMeta } from '@/_libs';
+
+import { MonthlyArchive } from './_components/MonthlyArchive';
 
 interface Props {
   params: Promise<{

@@ -77,7 +77,7 @@ export default tseslint.config(
       ],
       'function-paren-newline': [
         'error',
-        'multiline',
+        'consistent',
       ],
       'no-multiple-empty-lines': [
         'error',
@@ -151,15 +151,15 @@ export default tseslint.config(
         {
           ObjectExpression: {
             multiline: true,
-            consistent: true,
+            consistent: false,
           },
           ObjectPattern: {
             multiline: true,
-            consistent: true,
+            consistent: false,
           },
           ImportDeclaration: {
             multiline: true,
-            consistent: true,
+            consistent: false,
           },
           ExportDeclaration: {
             multiline: true,
@@ -167,7 +167,7 @@ export default tseslint.config(
           },
           TSTypeLiteral: {
             multiline: true,
-            consistent: true,
+            consistent: false,
           },
         },
       ],
@@ -183,7 +183,7 @@ export default tseslint.config(
       ],
       '@stylistic/object-property-newline': [
         'error',
-        { allowAllPropertiesOnSameLine: false, },
+        { allowAllPropertiesOnSameLine: true, },
       ],
       '@stylistic/array-element-newline': [
         'error',

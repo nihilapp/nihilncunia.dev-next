@@ -3,6 +3,7 @@ description:
 globs:
 alwaysApply: true
 ---
+
 # API 및 백엔드 개발 규칙
 
 ---
@@ -15,10 +16,10 @@ alwaysApply: true
 ## API Import 구조
 
 - 반드시 'NextRequest', 'NextResponse'를 'next/server'에서 import 합니다.
-- 'DB'는 '@/api/_libs'에서 import 합니다.
-- 'getHeaderToken', 'refreshCheck', 'serverTools'는 '@/api/_libs'에서 import 합니다.
-- 'ApiResponse', 'ApiError' 타입은 '@/_entities/common'에서 import 합니다.
-- 엔티티별 타입들은 '@/_entities/[entity명]'에서 import 합니다.
+- 'DB'는 '@/\_libs/server'에서 import 합니다.
+- 'getHeaderToken', 'refreshCheck', 'serverTools'는 '@/\_libs/server'에서 import 합니다.
+- 'ApiResponse', 'ApiError' 타입은 '@/\_entities/common'에서 import 합니다.
+- 엔티티별 타입들은 '@/\_entities/[entity명]'에서 import 합니다.
 
 ## JWT 인증 처리
 
@@ -77,4 +78,3 @@ alwaysApply: true
 ---
 
 > 이 규칙은 Next.js API, 데이터베이스, 인증, 보안 등 백엔드 개발의 일관성과 안전성을 보장하기 위한 가이드입니다.
-

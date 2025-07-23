@@ -1,7 +1,8 @@
 import React from 'react';
 
-import { BlogAdminTagsList } from '@/(blog_admin)/_components';
 import { setMeta } from '@/_libs';
+
+import { BlogAdminTagsList } from './_components/BlogAdminTagsList';
 
 interface Props {
   params: Promise<{ blog_id: string }>;

@@ -1,7 +1,8 @@
 import React from 'react';
 
-import { Admin } from '@/(admin)/_components';
 import { setMeta } from '@/_libs';
+
+import { Admin } from './_components/Admin';
 
 interface Props {}
 

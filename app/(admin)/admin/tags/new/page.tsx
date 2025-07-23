@@ -1,7 +1,8 @@
 import React from 'react';
 
-import { AdminTagNew } from '@/(admin)/_components';
 import { setMeta } from '@/_libs';
+
+import { AdminTagNew } from './_components/AdminTagNew';
 
 interface Props {}
 

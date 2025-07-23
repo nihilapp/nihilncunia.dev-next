@@ -1,7 +1,8 @@
 import React from 'react';
 
-import { NewPassword } from '@/(auth)/_components';
 import { setMeta } from '@/_libs';
+
+import { NewPassword } from './_components/NewPassword';
 
 interface Props {}
 

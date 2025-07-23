@@ -43,9 +43,7 @@ export const metadata: Metadata = {
       },
     ],
   },
-  alternates: {
-    canonical: siteConfig.url,
-  },
+  alternates: { canonical: siteConfig.url, },
   other: {
     'google-site-verification': siteConfig.googleVerfi,
     'version': siteConfig.version,

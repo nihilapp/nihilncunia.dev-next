@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
-import { siteConfig } from '../_config';
-import { SiteMetadata } from '../_types';
+import { siteConfig } from '@/_config';
+import type { SiteMetadata } from '@/_entities/common';
 
 export const setMeta = (meta: SiteMetadata): Metadata => {
   const siteDescription = meta.description || siteConfig.description;
@@ -39,11 +39,7 @@ export const setMeta = (meta: SiteMetadata): Metadata => {
         alt: siteImageAlt,
       }, ],
     },
-    alternates: {
-      canonical: siteUrl,
-    },
-    other: {
-      version: siteConfig.version,
-    },
+    alternates: { canonical: siteUrl, },
+    other: { version: siteConfig.version, },
   };
 };

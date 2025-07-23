@@ -1,7 +1,8 @@
 import React from 'react';
 
-import { PostDetail } from '@/(blog)/_components';
 import { setMeta } from '@/_libs';
+
+import { PostDetail } from './_components/PostDetail';
 
 interface Props {
   params: Promise<{
@@ -11,9 +12,7 @@ interface Props {
 }
 
 export async function generateMetadata({ params, }: Props) {
-  const {
-    blog_id, post_id,
-  } = await params;
+  const { blog_id, post_id, } = await params;
 
   // TODO: 포스트의 정보를 가져오는 함수를 이용해서 제목을 가져와야 함.
 
@@ -24,9 +23,7 @@ export async function generateMetadata({ params, }: Props) {
 }
 
 export default async function BlogPostDetailPage({ params, }: Props) {
-  const {
-    blog_id, post_id,
-  } = await params;
+  const { blog_id, post_id, } = await params;
 
   return (
     <PostDetail blogId={blog_id} postId={post_id} />
