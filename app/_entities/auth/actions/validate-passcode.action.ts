@@ -1,7 +1,7 @@
-"use server"
+'use server';
 
-import { DateTools } from '@/_libs/tools/date.tools';
 import { CookieHelper } from '@/_libs/tools/cookie.tools';
+import { DateTools } from '@/_libs/tools/date.tools';
 
 /**
  * 입력된 패스코드를 쿠키에서 읽어 검증합니다.
@@ -43,4 +43,4 @@ export async function validatePasscode(input: string): Promise<boolean> {
   await CookieHelper.remove('passcode_expires');
 
   return true;
-} 
+}

@@ -42,19 +42,19 @@ export class Logger {
     const prefix = `[${timestamp}] [${level.toUpperCase()}] [${category}]`;
 
     switch (level) {
-    case 'error':
-      console.error(prefix, message, context || '');
-      break;
-    case 'warn':
-      console.warn(prefix, message, context || '');
-      break;
-    case 'debug':
-      if (process.env.NODE_ENV === 'development') {
-        console.debug(prefix, message, context || '');
-      }
-      break;
-    default:
-      console.log(prefix, message, context || '');
+      case 'error':
+        console.error(prefix, message, context || '');
+        break;
+      case 'warn':
+        console.warn(prefix, message, context || '');
+        break;
+      case 'debug':
+        if (process.env.NODE_ENV === 'development') {
+          console.debug(prefix, message, context || '');
+        }
+        break;
+      default:
+        console.log(prefix, message, context || '');
     }
   }
 

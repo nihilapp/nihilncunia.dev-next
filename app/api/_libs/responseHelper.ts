@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import type { ApiError, ApiResponse, CreateResponse, CreateResponseWithHeaders, ApiErrorWithHeaders } from '@/_entities/common';
+import type { ApiError, ApiResponse, CreateResponse } from '@/_entities/common';
 
 export function createResponse<T>(
   {
@@ -11,7 +11,7 @@ export function createResponse<T>(
   headers?: Headers
 ) {
   const responseHeaders = new Headers();
-  
+
   if (headers) {
     headers.forEach((value, key) => {
       responseHeaders.set(key, value);
@@ -45,7 +45,7 @@ export function createErrorResponse(
   headers?: Headers
 ) {
   const responseHeaders = new Headers();
-  
+
   if (headers) {
     headers.forEach((value, key) => {
       responseHeaders.set(key, value);

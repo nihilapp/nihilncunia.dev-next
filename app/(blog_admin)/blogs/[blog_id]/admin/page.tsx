@@ -1,8 +1,7 @@
 import React from 'react';
 
+import { BlogAdmin } from '@/(blog_admin)/_components';
 import { setMeta } from '@/_libs';
-
-import { BlogAdmin } from './_components';
 
 interface Props {
   params: Promise<{ blog_id: string }>;
@@ -12,7 +11,7 @@ export async function generateMetadata({ params, }: Props) {
   const { blog_id, } = await params;
 
   return setMeta({
-    title: `블로그 관리`,
+    title: `블로그 관리 대시보드`,
     url: `/blogs/${blog_id}/admin`,
   });
 }

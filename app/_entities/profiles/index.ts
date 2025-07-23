@@ -1,4 +1,4 @@
 export {
   profileTable,
-  profileRole,
+  profileRole
 } from './profiles.table';

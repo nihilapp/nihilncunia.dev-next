@@ -1,4 +1,4 @@
-"use server"
+'use server';
 
 const PASSCODE_LENGTH = 60;
 const PASSCODE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -34,4 +34,4 @@ export async function generatePasscode(): Promise<string> {
 
   // 최종 60자리 패스코드 반환
   return passcode;
-} 
+}

@@ -7,21 +7,23 @@ import { cn } from '@/_libs';
 
 interface Props
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof cssVariants> {
+  VariantProps<typeof cssVariants> {
   blogId: string;
   className?: string;
 }
 
-const cssVariants = cva([``], {
+const cssVariants = cva([ ``, ], {
   variants: {},
   defaultVariants: {},
   compoundVariants: [],
 });
 
-export function BlogAdminPagesList({ blogId, className, ...props }: Props) {
+export function BlogAdminPostsList({ blogId, className, ...props }: Props) {
   return (
     <div className={cn(cssVariants({}), className)} {...props}>
-      {blogId} - 페이지 리스트
+      {blogId}
+      {' '}
+      - 포스트 리스트
     </div>
   );
 }

@@ -1,7 +1,8 @@
-"use server"
+'use server';
 
-import nodemailer from 'nodemailer';
 import { DateTime } from 'luxon';
+import nodemailer from 'nodemailer';
+
 import { CookieHelper } from '@/_libs/tools/cookie.tools';
 
 /**
@@ -20,7 +21,7 @@ import { CookieHelper } from '@/_libs/tools/cookie.tools';
  */
 export async function sendPasscodeEmail(passcode: string): Promise<boolean> {
   // 만료시간: 5분 후
-  const expires = DateTime.now().plus({ minutes: 5 }).toISO();
+  const expires = DateTime.now().plus({ minutes: 5, }).toISO();
 
   // 패스코드와 만료시각을 쿠키에 5분간 저장
   await CookieHelper.set('passcode', passcode, 300); // 5분
@@ -47,8 +48,9 @@ export async function sendPasscodeEmail(passcode: string): Promise<boolean> {
   try {
     await transporter.sendMail(mailOptions);
     return true;
-  } catch (e) {
+  }
+  catch (e) {
     // TODO: 에러 로깅
     return false;
   }
-} 
+}

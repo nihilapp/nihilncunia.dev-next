@@ -1,13 +1,13 @@
 import React from 'react';
 
-import { Admin } from '@/(admin)/admin/_components';
+import { Admin } from '@/(admin)/_components';
 import { setMeta } from '@/_libs';
 
 interface Props {}
 
 export const metadata = setMeta({
-  title: ``,
-  url: ``,
+  title: `관리자 대시보드`,
+  url: `/admin`,
 });
 
 export default function AdminPage() {

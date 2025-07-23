@@ -127,7 +127,7 @@ export default tseslint.config(
       '@stylistic/quotes': [
         'warn',
         'single',
-        { allowTemplateLiterals: true, },
+        { allowTemplateLiterals: 'always', },
       ],
       '@stylistic/semi': [
         'error',
@@ -162,6 +162,10 @@ export default tseslint.config(
             consistent: true,
           },
           ExportDeclaration: {
+            multiline: true,
+            consistent: true,
+          },
+          TSTypeLiteral: {
             multiline: true,
             consistent: true,
           },
@@ -250,7 +254,7 @@ export default tseslint.config(
       ],
 
       // React 규칙
-      '@stylistic/jsx-indent': [
+      '@stylistic/indent': [
         'warn',
         2,
         {
@@ -258,7 +262,7 @@ export default tseslint.config(
           indentLogicalExpressions: false,
         },
       ],
-      '@stylistic/jsx-indent-props': [
+      '@stylistic/indent': [
         'warn',
         2,
       ],

@@ -1,4 +1,4 @@
-import { pgEnum, pgSchema, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { pgEnum, pgSchema, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 const usersTable = pgSchema('auth').table('users', {
   id: uuid().primaryKey().defaultRandom(),

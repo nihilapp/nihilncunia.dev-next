@@ -7,3 +7,4 @@ export { BlogAdminPostNew } from './BlogAdminPostNew';
 export { BlogAdminPostsList } from './BlogAdminPostsList';
 export { BlogAdminTagsList } from './BlogAdminTagsList';
 export { BlogAdminTagNew } from './BlogAdminTagNew';
+export { BlogAdminSettings } from './BlogAdminSettings';

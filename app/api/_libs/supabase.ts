@@ -1,5 +1,5 @@
-import { type CookieOptions, createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
+import { type CookieOptions, createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 
 // Supabase 데이터베이스 타입 정의 import
 import type { Database } from '@/_entities/common/supabase.types';
@@ -122,13 +122,21 @@ export function createActionClient() {
           return cookieStore.get(name)?.value;
         },
         set(name: string, value: string, options: CookieOptions) {
-          cookieStore.set({ name, value, ...options });
+          cookieStore.set({
+            name,
+            value,
+            ...options,
+          });
         },
         remove(name: string, options: CookieOptions) {
-          cookieStore.set({ name, value: "", ...options });
+          cookieStore.set({
+            name,
+            value: '',
+            ...options,
+          });
         },
       },
-    },
+    }
   );
 }
 

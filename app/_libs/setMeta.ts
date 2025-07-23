@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+
 import { siteConfig } from '../_config';
 import { SiteMetadata } from '../_types';
 
@@ -31,14 +32,12 @@ export const setMeta = (meta: SiteMetadata): Metadata => {
       type: siteType,
       siteName: siteConfig.title,
       url: siteUrl,
-      images: [
-        {
-          url: siteImageLink,
-          width: 1920,
-          height: 1080,
-          alt: siteImageAlt,
-        },
-      ],
+      images: [ {
+        url: siteImageLink,
+        width: 1920,
+        height: 1080,
+        alt: siteImageAlt,
+      }, ],
     },
     alternates: {
       canonical: siteUrl,
