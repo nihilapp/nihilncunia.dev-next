@@ -1,80 +1,83 @@
 'use client';
 
 import { cva, type VariantProps } from 'class-variance-authority';
-import { useRouter } from 'next/navigation';
-import React, { useActionState, useEffect } from 'react';
+import React from 'react';
 
+import { Button } from '@/(common)/_components/ui/button';
 import { Input } from '@/(common)/_components/ui/input';
 import { Label } from '@/(common)/_components/ui/label';
-import { SubmitButton } from '@/(common)/_components/ui/SubmitButton';
-import { type ActionError } from '@/_entities/auth';
-import { useAuthCard } from '@/_entities/auth';
-import { validatePasscodeFormAction } from '@/_entities/auth/actions';
 import { cn } from '@/_libs';
 
 interface Props
-  extends React.FormHTMLAttributes<HTMLFormElement>,
+  extends React.HTMLAttributes<HTMLDivElement>,
   VariantProps<typeof cssVariants> {
   className?: string;
 }
 
-const cssVariants = cva(['space-y-4'], {
-  variants: {},
-  defaultVariants: {},
-  compoundVariants: [],
-});
-
-interface FormState {
-  success: boolean;
-  error?: ActionError;
-}
+const cssVariants = cva(
+  [ `flex flex-col items-center justify-center space-y-4 p-6`, ],
+  {
+    variants: {},
+    defaultVariants: {},
+    compoundVariants: [],
+  }
+);
 
 export function VerifyPasscode({ className, ...props }: Props) {
-  const router = useRouter();
-  const [state, action] = useActionState(validatePasscodeFormAction, {
-    success: false,
-  });
+  const [
+    passCode,
+    setPassCode,
+  ] = React.useState('');
 
-  useAuthCard('패스코드 인증', '패스코드를 입력해 인증하세요.');
-
-  // 성공 시 리다이렉트
-  useEffect(() => {
-    if (state.success) {
-      router.push('/auth/guard/complete');
+  const handleVerifyPasscode = async () => {
+    if (!passCode.trim()) {
+      alert('인증 코드를 입력해주세요.');
+      return;
     }
-  }, [state.success, router]);
+
+    // TODO: 패스코드 검증 로직 구현
+    console.log('패스코드 검증:', passCode);
+  };
 
   return (
-    <form
-      className={cn(cssVariants({}), className)}
-      action={action}
+    <div
+      className={cn(
+        cssVariants({}),
+        className
+      )}
       {...props}
     >
-      <div className="space-y-2">
-        <Label htmlFor="passcode">패스코드</Label>
+      <h2 className='text-2xl font-bold text-center'>
+        인증 코드 확인
+      </h2>
+
+      <p className='text-center text-gray-600'>
+        전송된 인증 코드를 입력해주세요.
+      </p>
+
+      <div className='w-full max-w-xs space-y-2'>
+        <Label htmlFor='passCode'>
+          인증 코드
+        </Label>
+
         <Input
-          id="passcode"
-          name="passcode"
-          type="text"
-          placeholder="60자리 숫자를 입력하세요"
-          minLength={60}
-          maxLength={60}
-          autoComplete="one-time-code"
+          id='passCode'
+          type='text'
+          value={passCode}
+          onChange={(e) => setPassCode(e.target.value)}
+          placeholder='인증 코드를 입력하세요'
+          className='w-full'
           required
         />
       </div>
 
-      {state.error && (
-        <p className="text-sm text-red-500">{state.error.message}</p>
-      )}
-
-      <SubmitButton
-        disabled={state.success}
-        className="w-full"
-        loadingText="인증 중..."
+      <Button
+        onClick={handleVerifyPasscode}
+        className='w-full max-w-xs'
+        disabled={!passCode.trim()}
       >
-        패스코드 인증
-      </SubmitButton>
-    </form>
+        인증 코드 확인
+      </Button>
+    </div>
   );
 }

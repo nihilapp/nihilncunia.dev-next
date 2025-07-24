@@ -1,3 +1,5 @@
-export { generatePasscode } from './generate-passcode.action';
-export { sendPasscodeEmail, sendPasscodeFormAction } from './send-passcode-email.action';
-export { validatePasscode, validatePasscodeFormAction } from './validate-passcode.action';
+export { genCode } from './gen-code';
+export { sendPasscodeAction } from './send-passcode';
+export { verifyPasscodeAction } from './verify-passcode';
+export type { SendPasscodeActionData } from './send-passcode';
+export type { VerifyPasscodeActionData, VerifyPasscodeFormData } from './verify-passcode';
