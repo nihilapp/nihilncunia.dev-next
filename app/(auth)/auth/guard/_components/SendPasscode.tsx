@@ -1,19 +1,21 @@
 'use client';
 
 import { cva, type VariantProps } from 'class-variance-authority';
-import React from 'react';
+import React, { useActionState, useEffect } from 'react';
 
+import { passCodeAction } from '@/(auth)/auth/guard/_actions/passcode.action';
 import { Button } from '@/(common)/_components/ui/button';
+import { useAuthActions, useAuthCard } from '@/_entities/auth';
 import { cn } from '@/_libs';
 
 interface Props
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends React.FormHTMLAttributes<HTMLFormElement>,
   VariantProps<typeof cssVariants> {
   className?: string;
 }
 
 const cssVariants = cva(
-  [ `flex flex-col items-center justify-center space-y-4 p-6`, ],
+  [ `flex flex-col items-center justify-center space-y-4`, ],
   {
     variants: {},
     defaultVariants: {},
@@ -22,33 +24,55 @@ const cssVariants = cva(
 );
 
 export function SendPasscode({ className, ...props }: Props) {
-  const handleSendPasscode = async () => {
-    // TODO: 패스코드 전송 로직 구현
-    console.log('패스코드 전송');
-  };
+  const [
+    state,
+    action,
+    isPending,
+  ] = useActionState(
+    passCodeAction,
+    { step: 1, message: '', }
+  );
+
+  const { setGuardStep, } = useAuthActions();
+
+  useEffect(() => {
+    if (state.step === 2) {
+      setGuardStep(state.step);
+    }
+  }, [
+    state,
+    setGuardStep,
+  ]);
+
+  useAuthCard(
+    '패스코드 발송',
+    '버튼을 클릭해 패스코드를 발송하세요.'
+  );
 
   return (
-    <div
+    <form
+      action={action}
       className={cn(
         cssVariants({}),
         className
       )}
       {...props}
     >
-      <h2 className='text-2xl font-bold text-center'>
-        인증 코드 전송
-      </h2>
-
-      <p className='text-center text-gray-600'>
-        인증 코드를 전송하시겠습니까?
-      </p>
+      <input
+        type='hidden'
+        name='_action'
+        value='send'
+      />
 
       <Button
-        onClick={handleSendPasscode}
+        type='submit'
+        disabled={isPending}
         className='w-full max-w-xs'
       >
-        인증 코드 전송
+        {state.step === 2
+          ? '패스코드 발송 중...'
+          : '패스코드 발송'}
       </Button>
-    </div>
+    </form>
   );
 }

@@ -1,21 +1,24 @@
 'use client';
 
 import { cva, type VariantProps } from 'class-variance-authority';
-import React from 'react';
+import { useSearchParams } from 'next/navigation';
+import React, { useActionState } from 'react';
 
+import { passCodeAction } from '@/(auth)/auth/guard/_actions/passcode.action';
 import { Button } from '@/(common)/_components/ui/button';
 import { Input } from '@/(common)/_components/ui/input';
 import { Label } from '@/(common)/_components/ui/label';
+import { useAuthCard } from '@/_entities/auth';
 import { cn } from '@/_libs';
 
 interface Props
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends React.FormHTMLAttributes<HTMLFormElement>,
   VariantProps<typeof cssVariants> {
   className?: string;
 }
 
 const cssVariants = cva(
-  [ `flex flex-col items-center justify-center space-y-4 p-6`, ],
+  [ `flex flex-col items-center justify-center space-y-4`, ],
   {
     variants: {},
     defaultVariants: {},
@@ -25,35 +28,44 @@ const cssVariants = cva(
 
 export function VerifyPasscode({ className, ...props }: Props) {
   const [
-    passCode,
-    setPassCode,
-  ] = React.useState('');
+    state,
+    action,
+    isPending,
+  ] = useActionState(
+    passCodeAction,
+    { step: 2, message: '', }
+  );
 
-  const handleVerifyPasscode = async () => {
-    if (!passCode.trim()) {
-      alert('인증 코드를 입력해주세요.');
-      return;
-    }
+  const searchParams = useSearchParams();
+  const callback = searchParams.get('callback');
 
-    // TODO: 패스코드 검증 로직 구현
-    console.log('패스코드 검증:', passCode);
-  };
+  useAuthCard(
+    '인증 코드 확인',
+    '전송된 인증 코드를 입력해주세요.'
+  );
 
   return (
-    <div
+    <form
+      action={action}
       className={cn(
         cssVariants({}),
         className
       )}
       {...props}
     >
-      <h2 className='text-2xl font-bold text-center'>
-        인증 코드 확인
-      </h2>
+      <input
+        type='hidden'
+        name='_action'
+        value='verify'
+      />
 
-      <p className='text-center text-gray-600'>
-        전송된 인증 코드를 입력해주세요.
-      </p>
+      {callback && (
+        <input
+          type='hidden'
+          name='callback'
+          value={callback}
+        />
+      )}
 
       <div className='w-full max-w-xs space-y-2'>
         <Label htmlFor='passCode'>
@@ -62,9 +74,8 @@ export function VerifyPasscode({ className, ...props }: Props) {
 
         <Input
           id='passCode'
+          name='passCode'
           type='text'
-          value={passCode}
-          onChange={(e) => setPassCode(e.target.value)}
           placeholder='인증 코드를 입력하세요'
           className='w-full'
           required
@@ -72,12 +83,14 @@ export function VerifyPasscode({ className, ...props }: Props) {
       </div>
 
       <Button
-        onClick={handleVerifyPasscode}
+        type='submit'
         className='w-full max-w-xs'
-        disabled={!passCode.trim()}
+        disabled={isPending}
       >
-        인증 코드 확인
+        {isPending
+          ? '인증 코드 확인 중...'
+          : '인증 코드 확인'}
       </Button>
-    </div>
+    </form>
   );
 }
