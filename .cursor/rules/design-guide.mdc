@@ -1,0 +1,365 @@
+# 디자인 시스템 및 TailwindCSS 사용 가이드
+
+---
+
+## 프로젝트 폰트 시스템
+
+### 기본 폰트 설정
+
+- **한글 폰트**: `"Noto Sans KR", sans-serif`
+- **아이콘 폰트**: `"Font Awesome 5 Free", sans-serif`
+- **코드 폰트**: `"Cascadia Code", sans-serif`
+
+### 폰트 크기 시스템
+
+```css
+--text-xs: 0.8rem    /* 12.8px */
+--text-sm: 1rem      /* 16px */
+--text-md: 1.2rem    /* 19.2px */
+--text-lg: 1.4rem    /* 22.4px */
+--text-h1: 2.4rem    /* 38.4px */
+--text-h2: 2.2rem    /* 35.2px */
+--text-h3: 2rem      /* 32px */
+--text-h4: 1.8rem    /* 28.8px */
+--text-h5: 1.6rem    /* 25.6px */
+--text-h6: 1.4rem    /* 22.4px */
+```
+
+### 폰트 굵기 시스템
+
+```css
+--font-weight-100: 100  /* Thin */
+--font-weight-200: 200  /* Extra Light */
+--font-weight-300: 300  /* Light */
+--font-weight-400: 400  /* Normal */
+--font-weight-500: 500  /* Medium */
+--font-weight-600: 600  /* Semi Bold */
+--font-weight-700: 700  /* Bold */
+--font-weight-800: 800  /* Extra Bold */
+--font-weight-900: 900  /* Black */
+```
+
+---
+
+## 색상 시스템
+
+### 기본 색상 팔레트
+
+프로젝트는 OKLCH 색상 공간을 사용하여 더 정확한 색상 표현을 제공합니다.
+
+#### 무채색 계열
+
+- **Slate**: `slate-50` ~ `slate-950` (회색빛이 도는 무채색)
+- **Gray**: `gray-50` ~ `gray-950` (중성적인 회색)
+- **Zinc**: `zinc-50` ~ `zinc-950` (따뜻한 회색)
+- **Neutral**: `neutral-50` ~ `neutral-950` (순수한 무채색)
+- **Stone**: `stone-50` ~ `stone-950` (따뜻한 베이지 계열)
+
+#### 포인트 컬러
+
+- **Red**: `red-50` ~ `red-950` (경고, 에러, 강조)
+- **Blue**: `blue-50` ~ `blue-950` (링크, 정보)
+- **Green**: `green-50` ~ `green-950` (성공, 확인)
+- **Yellow**: `yellow-50` ~ `yellow-950` (주의, 알림)
+
+### 다크모드 지원
+
+모든 색상은 다크모드를 지원하며, `.dark` 클래스 하에서 자동으로 변경됩니다.
+
+---
+
+## 크기 및 간격 시스템
+
+### 동적 뷰포트 단위
+
+```css
+/* 높이 */
+--dvh-0: 0dvh
+--dvh-5: 5dvh
+--dvh-10: 10dvh
+--dvh-15: 15dvh
+--dvh-20: 20dvh
+--dvh-25: 25dvh
+--dvh-30: 30dvh
+--dvh-35: 35dvh
+--dvh-40: 40dvh
+--dvh-45: 45dvh
+--dvh-50: 50dvh
+--dvh-55: 55dvh
+--dvh-60: 60dvh
+--dvh-65: 65dvh
+--dvh-70: 70dvh
+--dvh-75: 75dvh
+--dvh-80: 80dvh
+--dvh-85: 85dvh
+--dvh-90: 90dvh
+--dvh-95: 95dvh
+--dvh-100: 100dvh
+
+/* 너비 */
+--dvw-0: 0dvw
+--dvw-5: 5dvw
+--dvw-10: 10dvw
+--dvw-15: 15dvw
+--dvw-20: 20dvw
+--dvw-25: 25dvw
+--dvw-30: 30dvw
+--dvw-35: 35dvw
+--dvw-40: 40dvw
+--dvw-45: 45dvw
+--dvw-50: 50dvw
+--dvw-55: 55dvw
+--dvw-60: 60dvw
+--dvw-65: 65dvh
+--dvw-70: 70dvh
+--dvw-75: 75dvh
+--dvw-80: 80dvh
+--dvw-85: 85dvh
+--dvw-90: 90dvh
+--dvw-95: 95dvh
+--dvw-100: 100dvw
+```
+
+### 기본 간격
+
+```css
+--spacing: 0.25rem; /* 4px 기본 단위 */
+```
+
+### 둥근 모서리 시스템
+
+```css
+--radius-0: 0
+--radius-1: 0.25rem    /* 4px */
+--radius-2: 0.5rem     /* 8px */
+--radius-3: 0.75rem    /* 12px */
+--radius-4: 1rem       /* 16px */
+--radius-5: 1.25rem    /* 20px */
+--radius-6: 1.5rem     /* 24px */
+--radius-8: 2rem       /* 32px */
+--radius-10: 2.5rem    /* 40px */
+--radius-12: 3rem      /* 48px */
+--radius-16: 4rem      /* 64px */
+--radius-20: 5rem      /* 80px */
+--radius-24: 6rem      /* 96px */
+```
+
+---
+
+## 반응형 브레이크포인트
+
+### 모바일 퍼스트 접근
+
+```css
+--breakpoint-mo-sm: 480px   /* 작은 모바일 */
+--breakpoint-mo-md: 768px   /* 태블릿 */
+--breakpoint-mo-lg: 1024px  /* 데스크톱 */
+```
+
+### 사용 예시
+
+```html
+<!-- 모바일 퍼스트 -->
+<div class="w-full md:w-1/2 lg:w-1/3">
+  <!-- 모바일: 전체 너비, 태블릿: 절반, 데스크톱: 1/3 -->
+</div>
+```
+
+---
+
+## 커스텀 변형 (Variants)
+
+### 자식 선택자 변형
+
+```css
+/* 첫 번째 요소 */
+first:bg-blue-500
+
+/* 마지막 요소 */
+last:bg-red-500
+
+/* 첫 번째가 아닌 요소 */
+not-first:ml-4
+
+/* 마지막이 아닌 요소 */
+not-last:mr-4
+
+/* 호버 및 포커스 */
+hocus:bg-gray-100
+
+/* n번째 요소 */
+nth-1:bg-yellow-100
+nth-2:bg-green-100
+nth-3:bg-blue-100
+nth-4:bg-purple-100
+nth-5:bg-pink-100
+
+/* 뒤에서 n번째 요소 */
+nth-last-1:bg-red-100
+nth-last-2:bg-orange-100
+nth-last-3:bg-yellow-100
+nth-last-4:bg-green-100
+nth-last-5:bg-blue-100
+```
+
+---
+
+## 애니메이션 시스템
+
+### 기본 애니메이션
+
+```css
+--animate-spin-2: spin 2s linear infinite
+--animate-spin-3: spin 3s linear infinite
+```
+
+### 사용 예시
+
+```html
+<div class="animate-spin-2">2초 회전</div>
+<div class="animate-spin-3">3초 회전</div>
+```
+
+---
+
+## 클래스 사용 가이드
+
+### 프로젝트 커스텀 클래스 우선 사용
+
+다음 클래스들은 프로젝트에서 커스텀으로 정의된 클래스입니다:
+
+#### 폰트 크기
+
+- `text-h1` ~ `text-h6` (시맨틱한 제목)
+- `text-xs`, `text-sm`, `text-md`, `text-lg` (본문 크기)
+
+#### 동적 뷰포트 단위
+
+- `h-dvh-*`, `w-dvw-*` (예: `h-dvh-90`, `py-dvh-5`)
+- `min-h-dvh`, `max-h-dvh`
+
+#### 둥근 모서리
+
+- `rounded-*` (예: `rounded-2xl`, `rounded-3xl`)
+
+### TailwindCSS 원본 클래스 사용
+
+프로젝트에 정의되지 않은 클래스는 TailwindCSS 원본을 사용합니다:
+
+#### 색상
+
+- `bg-gray-900`, `text-gray-600`, `border-gray-100`
+- `shadow-black/20`, `hover:shadow-red-500/10`
+
+#### 레이아웃
+
+- `flex`, `grid`, `items-center`, `justify-center`
+- `w-full`, `max-w-[550px]`, `h-full`
+
+#### 간격
+
+- `p-8`, `px-4`, `py-dvh-5`, `pt-6`, `pb-6`
+
+#### 효과
+
+- `transition-all`, `duration-300`, `ease-out`
+- `backdrop-blur-sm`, `overflow-hidden`
+
+---
+
+## 디자인 패턴 가이드
+
+### 1. 카드 디자인
+
+```html
+<!-- 기본 카드 -->
+<div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-6">
+  <h3 class="text-h3 font-bold text-gray-900 mb-4">제목</h3>
+  <p class="text-base text-gray-600">내용</p>
+</div>
+
+<!-- 호버 효과가 있는 카드 -->
+<div
+  class="bg-white rounded-2xl shadow-xl hover:shadow-2xl hover:shadow-red-500/10 transition-all duration-300"
+>
+  <!-- 내용 -->
+</div>
+```
+
+### 2. 버튼 디자인
+
+```html
+<!-- 기본 버튼 -->
+<button
+  class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
+>
+  버튼
+</button>
+
+<!-- 아웃라인 버튼 -->
+<button
+  class="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-semibold px-6 py-3 rounded-lg transition-all"
+>
+  버튼
+</button>
+```
+
+### 3. 폼 요소
+
+```html
+<!-- 입력 필드 -->
+<input
+  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+/>
+
+<!-- 라벨 -->
+<label class="block text-sm font-medium text-gray-700 mb-2">라벨</label>
+```
+
+### 4. 레이아웃
+
+```html
+<!-- 중앙 정렬 -->
+<div class="flex items-center justify-center min-h-dvh">
+  <!-- 내용 -->
+</div>
+
+<!-- 그리드 레이아웃 -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  <!-- 아이템들 -->
+</div>
+```
+
+---
+
+## 권장사항
+
+### 1. 색상 사용
+
+- **텍스트**: `text-gray-900` (제목), `text-gray-600` (본문), `text-gray-400` (보조)
+- **배경**: `bg-white` (카드), `bg-gray-50` (섹션), `bg-gray-900` (다크 배경)
+- **테두리**: `border-gray-200` (연한), `border-gray-300` (중간)
+
+### 2. 간격 사용
+
+- **작은 간격**: `p-2`, `m-2` (8px)
+- **중간 간격**: `p-4`, `m-4` (16px)
+- **큰 간격**: `p-6`, `m-6` (24px)
+- **매우 큰 간격**: `p-8`, `m-8` (32px)
+
+### 3. 폰트 사용
+
+- **제목**: `text-h1` ~ `text-h6` (시맨틱한 제목)
+- **본문**: `text-base` (16px)
+- **작은 텍스트**: `text-sm` (14px)
+- **매우 작은 텍스트**: `text-xs` (12.8px)
+
+### 4. 반응형 고려사항
+
+- 항상 모바일 퍼스트로 설계
+- `md:` (768px 이상), `lg:` (1024px 이상) 사용
+- 동적 뷰포트 단위 (`dvh`, `dvw`) 적극 활용
+
+---
+
+> 이 가이드는 프로젝트의 일관된 디자인 시스템을 유지하고, 개발자들이 효율적으로 TailwindCSS를 사용할 수 있도록 도와줍니다.

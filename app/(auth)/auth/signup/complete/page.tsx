@@ -5,7 +5,7 @@ import { setMeta } from '@/_libs';
 import { SignUpComplete } from './_components/SignUpComplete';
 
 export const metadata = setMeta({
-  title: `회원가입 완료`,
+  title: `계정 생성 완료`,
   url: `/auth/signup/complete`,
 });
 

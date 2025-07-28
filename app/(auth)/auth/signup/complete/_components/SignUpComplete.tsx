@@ -24,8 +24,8 @@ export function SignUpComplete({ className, ...props }: Props) {
   const router = useRouter();
 
   useAuthCard(
-    '회원가입 완료',
-    '회원가입이 성공적으로 완료되었습니다. 로그인 페이지로 이동해주세요.'
+    '계정 생성 완료',
+    '계정 생성이 성공적으로 완료되었습니다. 로그인 페이지로 이동해주세요.'
   );
 
   const onClickSignIn = () => {

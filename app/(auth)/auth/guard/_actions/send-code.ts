@@ -4,6 +4,7 @@ import nodemailer from 'nodemailer';
 
 import { genCode } from '@/(auth)/auth/guard/_actions/gen-code';
 import { CookieHelper } from '@/_libs/tools/cookie.tools';
+import { Logger } from '@/_libs/tools/logger.tools';
 
 type SendCodeResult = {
   step: number;
@@ -17,31 +18,23 @@ type SendCodeResult = {
  *
  * @returns 전송 성공 여부
  */
-export async function sendCode(
-): Promise<SendCodeResult> {
+export async function sendCode(): Promise<SendCodeResult> {
   try {
-    // 60자리 패스코드 생성
     const passCode = await genCode();
+    Logger.auth('패스코드 생성 완료');
 
-    // 패스코드를 쿠키에 저장 (5분 만료)
-    await CookieHelper.set(
-      'auth_passcode',
-      passCode,
-      '5m'
-    );
+    await CookieHelper.set('auth_passcode', passCode, '5m');
+    Logger.auth('패스코드 쿠키 저장 완료');
 
-    // nodemailer로 이메일 발송 (네이버 SMTP 사용)
-    const transporter = nodemailer.createTransport(
-      {
-        host: 'smtp.naver.com',
-        port: 587,
-        secure: false,
-        auth: {
-          user: process.env.MAIL_FROM,
-          pass: process.env.MAIL_FROM_PASSWORD,
-        },
-      }
-    );
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.naver.com',
+      port: 587,
+      secure: false,
+      auth: {
+        user: process.env.MAIL_FROM,
+        pass: process.env.MAIL_FROM_PASSWORD,
+      },
+    });
 
     const mailOptions = {
       from: process.env.MAIL_FROM,
@@ -59,9 +52,8 @@ export async function sendCode(
     `,
     };
 
-    await transporter.sendMail(
-      mailOptions
-    );
+    await transporter.sendMail(mailOptions);
+    Logger.auth('이메일 발송 완료');
 
     return {
       step: 2,
@@ -69,10 +61,7 @@ export async function sendCode(
     };
   }
   catch (error) {
-    console.error(
-      '패스코드 전송 실패:',
-      error
-    );
+    Logger.authError('패스코드 전송 실패', { error, });
 
     return {
       step: 1,

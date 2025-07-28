@@ -12,6 +12,7 @@ interface AuthActions {
   setCardTitle: (title: string) => void;
   setCardDescription: (description: string) => void;
   setCardFooter: (footer: React.ReactNode | null) => void;
+  setCallbackUrl: (url: string) => void;
 }
 
 interface AuthState {
@@ -22,6 +23,7 @@ interface AuthState {
   cardTitle: string;
   cardDescription: string;
   cardFooter: React.ReactNode | null;
+  callbackUrl: string;
   actions: AuthActions;
 }
 
@@ -34,6 +36,7 @@ const authStore = create<AuthState>()(
     cardTitle: '',
     cardDescription: '',
     cardFooter: null,
+    callbackUrl: '',
     actions: {
       setSignInStep: (step) => (
         set((state) => { state.signInStep = step; })
@@ -58,6 +61,9 @@ const authStore = create<AuthState>()(
       ),
       setCardFooter: (footer) => (
         set((state) => { state.cardFooter = footer; })
+      ),
+      setCallbackUrl: (url) => (
+        set((state) => { state.callbackUrl = url; })
       ),
     },
   }))
@@ -93,4 +99,8 @@ export const useCardDescription = () => authStore(
 
 export const useCardFooter = () => authStore(
   (state) => state.cardFooter
+);
+
+export const useCallbackUrl = () => authStore(
+  (state) => state.callbackUrl
 );

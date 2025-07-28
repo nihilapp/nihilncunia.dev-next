@@ -2,9 +2,10 @@
 
 import { cva, type VariantProps } from 'class-variance-authority';
 import { useSearchParams } from 'next/navigation';
+import { useActionState } from 'react';
 import React from 'react';
 
-import { setAuthCompleteAction } from '@/(auth)/auth/guard/complete/_actions/set-auth-complete-action';
+import { guardCompleteAction } from '@/(auth)/auth/guard/complete/_actions/guard-complete.action';
 import { Button } from '@/(common)/_components/ui/button';
 import { useAuthCard } from '@/_entities/auth';
 import { cn } from '@/_libs';
@@ -25,44 +26,35 @@ export function GuardComplete({ className, ...props }: Props) {
   const searchParams = useSearchParams();
   const callback = searchParams.get('callback');
 
-  useAuthCard(
-    '보호막 인증 완료', '인증이 성공적으로 완료되었습니다.'
-  );
+  useAuthCard('보호막 인증 완료', '인증이 성공적으로 완료되었습니다.');
 
-  const handleSubmit = async (formData: FormData) => {
-    try {
-      // 서버 액션 실행
-      await setAuthCompleteAction({ success: false, message: '', }, formData);
-    }
-    catch (error) {
-      // 리다이렉트 에러는 정상적인 동작이므로 무시
-      console.log('인증 완료 처리됨');
-    }
-  };
+  const [
+    state,
+    action,
+    isPending,
+  ] = useActionState(
+    guardCompleteAction,
+    { success: false, message: '', }
+  );
 
   return (
     <form
-      action={handleSubmit}
-      className={cn(
-        cssVariants({}),
-        className
-      )}
+      action={action}
+      className={cn(cssVariants({}), className)}
       {...props}
     >
-      {callback && (
-        <input
-          type='hidden'
-          name='callback'
-          value={callback}
-        />
-      )}
+      {callback && <input type='hidden' name='callback' value={callback} />}
 
-      <Button
-        type='submit'
-        className='w-full'
-      >
-        돌아가기
+      <Button type='submit' className='w-full' disabled={isPending || state.success}>
+        {isPending
+          ? '처리 중...'
+          : state.success
+            ? '완료'
+            : '돌아가기'}
       </Button>
+      {state.message && !state.success && (
+        <div className='text-red-500 text-sm mt-2'>{state.message}</div>
+      )}
     </form>
   );
 }

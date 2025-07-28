@@ -42,17 +42,27 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 #### Route Groups
 
 - `app/(common)/` - Public pages and shared components
-- `app/(auth)/` - Authentication-related pages
+- `app/(auth)/` - Authentication-related pages and server actions
+- `app/(blog)/` - Blog content pages (posts, categories, tags)
+- `app/(blog_admin)/` - Blog administration pages
+- `app/(admin)/` - System administration pages
 - `app/api/` - API routes with JWT authentication
 
 #### Core Directories
 
 - `app/_entities/` - Domain-specific modules (auth, profiles, etc.)
-  - Each entity has: `index.ts`, `*.api.ts`, `*.store.ts`, `*.keys.ts`, `*.types.ts`, `hooks/`
+  - Each entity has: `index.ts`, `*.api.ts`, `*.store.ts`, `*.keys.ts`, `*.types.ts`, `*.table.ts`, `hooks/`
 - `app/_libs/` - Utility functions and tools
+  - `app/_libs/server/` - Server-side utilities (response, supabase client)
+  - `app/_libs/tools/` - Utility tools (bcrypt, date, logger, etc.)
 - `app/_components/` - Shared components (use index.ts for exports)
 - `app/_data/` - Static data and constants
 - `app/_sql/` - Drizzle migrations, triggers, and views
+- `app/_config/` - Site configuration and settings
+- `app/_icons/` - Icon assets and exports
+- `app/_images/` - Image assets
+- `app/_layouts/` - Layout providers (React Query, Zustand)
+- `app/_styles/` - Global CSS and styling configurations
 - `app/api/_libs/` - API utilities and helpers
 
 #### Database Schema
@@ -99,12 +109,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   }
   ```
 
-#### API Development
+#### Server Actions & API Development
 
-- All routes require JWT authentication except GET requests
-- Import structure: NextRequest/NextResponse, DB from `@/_libs/server`
-- Response format: `ApiResponse<T>` for success, `ApiError` for errors
-- Error handling: 400 (bad request), 401 (auth), 404 (not found), 409 (conflict), 500 (server)
+- **Server Actions**: Primary method for form handling and mutations (API routes not used)
+  - File naming: `*.action.ts` for server actions
+  - Location: `app/(route)/_actions/` directories for route-specific actions
+  - Route-specific actions: Actions only used in specific routes go in that route's `_actions/` folder
+  - Main action files: `*.action.ts` files contain the primary action functions
+  - Helper actions: Supporting functions in separate files (e.g., `send-code.ts`, `verify-code.ts`)
+  - Return type: `Promise<FormState>` for form actions
+  - Usage: Import and use with `useActionState` in client components
+  - Error handling with Logger utility
+- **API Routes**: Legacy - avoid using, prefer server actions
+  - Import structure: NextRequest/NextResponse, DB from `@/_libs/server`
+  - Response format: `ApiResponse<T>` for success, `ApiError` for errors
+  - Error handling: 400 (bad request), 401 (auth), 404 (not found), 409 (conflict), 500 (server)
 
 #### React Query Patterns
 
@@ -124,14 +143,30 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Authentication & Security
 
-- Supabase Auth integration
-- JWT token validation on API routes
-- bcrypt for password hashing
-- Role-based access control (USER, ADMIN, SUPER_ADMIN)
+- **Authentication System**: Supabase Auth with custom guard system
+  - Two-factor authentication with OTP (using otplib)
+  - Server actions for auth flow (`passcode.action.ts`, `guard-complete.action.ts`)
+  - Role-based access control (USER, ADMIN, SUPER_ADMIN)
+  - bcrypt for password hashing
+  - Zustand store for auth state management
 
-## Notes
+## Current Status & Notes
 
-- Project is transitioning from Prisma to Drizzle ORM
+### Active Migration
+- **Branch**: `migration-to-server-action`
+- **Status**: Migrating authentication system to Next.js server actions
+- **Completed**: OTP guard system, passcode verification, auth flow redesign
+- **In Progress**: Callback URL handling and auth completion flow
+
+### Key Updates
+- ✅ Drizzle ORM migration from Prisma completed
+- ✅ Server actions implementation for authentication
+- ✅ Two-factor authentication with OTP integration  
+- ✅ Enhanced logging system with Logger utility
+- 🔄 Authentication flow callback handling optimization
+
+### Technical Notes
 - Uses pnpm workspaces configuration
 - ESLint configured with strict TypeScript rules
 - Tailwind CSS v4 with custom styling architecture
+- React 19 and Next.js 15 with App Router
