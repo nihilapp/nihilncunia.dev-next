@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useActionState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import React, { useActionState } from 'react';
 
 import { useAuthCard } from '@/_entities/auth';
 import { cn } from '@/_libs';
@@ -41,11 +41,12 @@ export function SignInOtp({ className, ...props }: Props) {
     <div className={cn(className)} {...props}>
       <form action={action}>
         <input type='hidden' name='email' value={email} />
-        
+
         <div className='space-y-4'>
           <div className='text-center mb-4'>
             <p className='text-sm text-gray-600'>
-              <strong>{email}</strong>로 로그인하려고 합니다.
+              <strong>{email}</strong>
+              로 로그인하려고 합니다.
             </p>
             <p className='text-sm text-gray-600 mt-2'>
               인증 앱에서 6자리 OTP 코드를 확인하여 입력해주세요.
@@ -71,7 +72,10 @@ export function SignInOtp({ className, ...props }: Props) {
           </div>
 
           {state.message && (
-            <div className={`text-sm ${state.message.includes('성공') ? 'text-green-600' : 'text-red-600'}`}>
+            <div className={`text-sm ${state.message.includes('성공')
+              ? 'text-green-600'
+              : 'text-red-600'}`}
+            >
               {state.message}
             </div>
           )}

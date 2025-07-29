@@ -3,8 +3,8 @@
 import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { Logger } from '@/_libs/tools/logger.tools';
 import type { AuthErrorInfo } from '@/_entities/auth/auth.types';
+import { Logger } from '@/_libs/tools/logger.tools';
 
 interface Props {
   children: React.ReactNode;
@@ -44,7 +44,7 @@ function AuthErrorFallback({
             />
           </svg>
         </div>
-        
+
         <div>
           <h3 className='text-lg font-semibold text-red-800 mb-2'>
             {title}
@@ -106,14 +106,14 @@ export function AuthErrorBoundary({
 
   const handleReset = () => {
     Logger.auth('Error Boundary 리셋 시도');
-    
+
     // 필요한 경우 상태 초기화
     // 예: 쿠키 정리, 로컬 스토리지 정리 등
   };
 
   return (
     <ErrorBoundary
-      FallbackComponent={({ error, resetErrorBoundary }) => (
+      FallbackComponent={({ error, resetErrorBoundary, }) => (
         <AuthErrorFallback
           error={error}
           resetErrorBoundary={resetErrorBoundary}

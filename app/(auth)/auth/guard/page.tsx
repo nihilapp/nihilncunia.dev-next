@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { setMeta } from '@/_libs';
 import { AuthErrorBoundary } from '@/(auth)/_components';
+import { setMeta } from '@/_libs';
 
 import { AuthGuard } from './_components/AuthGuard';
 

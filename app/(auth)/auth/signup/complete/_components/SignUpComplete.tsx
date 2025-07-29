@@ -10,11 +10,11 @@ import { cn } from '@/_libs';
 
 interface Props
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof cssVariants> {
+  VariantProps<typeof cssVariants> {
   className?: string;
 }
 
-const cssVariants = cva([``], {
+const cssVariants = cva([ ``, ], {
   variants: {},
   defaultVariants: {},
   compoundVariants: [],
@@ -34,7 +34,7 @@ export function SignUpComplete({ className, ...props }: Props) {
 
   return (
     <div className={cn(cssVariants({}), className)} {...props}>
-      <Button onClick={onClickSignIn} className="w-full">
+      <Button onClick={onClickSignIn} className='w-full'>
         로그인 페이지로
       </Button>
     </div>

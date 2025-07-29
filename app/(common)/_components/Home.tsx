@@ -2,15 +2,19 @@
 
 import type { Session } from '@supabase/supabase-js';
 import { cva, type VariantProps } from 'class-variance-authority';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 
+import { Button } from '@/(common)/_components/ui/button';
 import { cn } from '@/_libs';
+import { createActionClient } from '@/_libs/server/supabase';
 
 interface Props
   extends React.HTMLAttributes<HTMLDivElement>,
   VariantProps<typeof cssVariants> {
   className?: string;
-  session: Session;
+  session: Session | null;
 }
 
 const cssVariants = cva(
@@ -23,6 +27,19 @@ const cssVariants = cva(
 );
 
 export function Home({ className, session, ...props }: Props) {
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      const supabase = createActionClient();
+      await supabase.auth.signOut();
+      router.refresh();
+    }
+    catch (error) {
+      console.error('로그아웃 실패:', error);
+    }
+  };
+
   return (
     <div
       className={cn(
@@ -33,6 +50,57 @@ export function Home({ className, session, ...props }: Props) {
     >
       <div className='p-4'>
         <h1 className='text-2xl font-bold mb-4'>홈페이지</h1>
+
+        {/* 임시 인증 버튼들 */}
+        <div className='mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200'>
+          <h2 className='text-lg font-semibold mb-3 text-blue-800'>임시 인증 버튼</h2>
+          <div className='flex flex-wrap gap-3'>
+            {session
+              ? (
+                <>
+                  <Button
+                    onClick={handleLogout}
+                    variant='destructive'
+                    size='sm'
+                  >
+                    로그아웃
+                  </Button>
+                  <Button
+                    asChild
+                    variant='outline'
+                    size='sm'
+                  >
+                    <Link href='/auth/guard'>보안 인증</Link>
+                  </Button>
+                </>
+              )
+              : (
+                <>
+                  <Button
+                    asChild
+                    variant='default'
+                    size='sm'
+                  >
+                    <Link href='/auth/signin'>로그인</Link>
+                  </Button>
+                  <Button
+                    asChild
+                    variant='secondary'
+                    size='sm'
+                  >
+                    <Link href='/auth/signup'>계정 생성</Link>
+                  </Button>
+                  <Button
+                    asChild
+                    variant='outline'
+                    size='sm'
+                  >
+                    <Link href='/auth/guard'>보안 인증</Link>
+                  </Button>
+                </>
+              )}
+          </div>
+        </div>
 
         <div className='bg-gray-100 p-4 rounded-md'>
           <h2 className='text-lg font-semibold mb-2'>세션 정보</h2>

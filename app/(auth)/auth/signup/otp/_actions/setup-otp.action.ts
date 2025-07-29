@@ -4,11 +4,11 @@ import { redirect } from 'next/navigation';
 import { authenticator } from 'otplib';
 import QRCode from 'qrcode';
 
-import { createActionClient } from '@/_libs/server/supabase';
-import { Logger } from '@/_libs/tools/logger.tools';
-import { CookieHelper } from '@/_libs/tools/cookie.tools';
-import { RateLimiter } from '@/_libs/tools/rate-limit.tools';
 import type { SignUpData } from '@/_entities/auth/auth.types';
+import { createActionClient } from '@/_libs/server/supabase';
+import { CookieHelper } from '@/_libs/tools/cookie.tools';
+import { Logger } from '@/_libs/tools/logger.tools';
+import { RateLimiter } from '@/_libs/tools/rate-limit.tools';
 
 export type SetupOtpFormState = {
   step: number;
@@ -23,7 +23,7 @@ export async function setupOtpAction(
 ): Promise<SetupOtpFormState> {
   try {
     const action = formData.get('_action') as string;
-    
+
     const signUpDataCookie = await CookieHelper.get<string>('signup_data');
     if (!signUpDataCookie) {
       return {
@@ -33,7 +33,7 @@ export async function setupOtpAction(
     }
 
     const signUpData: SignUpData = JSON.parse(signUpDataCookie);
-    const { email, username, password, role } = signUpData;
+    const { email, username, password, role, } = signUpData;
 
     if (action === 'generate') {
       const secret = authenticator.generateSecret();
@@ -87,7 +87,7 @@ export async function setupOtpAction(
       const rateLimitResult = await RateLimiter.checkLimit(email, 'otp');
 
       if (!rateLimitResult.allowed) {
-        Logger.authError('회원가입 OTP 검증 rate limit 초과', { email, lockTimeLeft: rateLimitResult.lockTimeLeft });
+        Logger.authError('회원가입 OTP 검증 rate limit 초과', { email, lockTimeLeft: rateLimitResult.lockTimeLeft, });
         return {
           step: 3,
           message: rateLimitResult.message,
@@ -97,7 +97,7 @@ export async function setupOtpAction(
       }
 
       const isValid = authenticator.check(otpCode, secret);
-      
+
       // Rate limiting 기록
       await RateLimiter.recordAttempt(email, 'otp', isValid);
 
@@ -140,7 +140,7 @@ export async function setupOtpAction(
       }
 
       await CookieHelper.remove('signup_data');
-      
+
       Logger.auth(`회원가입 및 OTP 설정 완료: ${email}`, { userId: signUpData.user?.id, });
       redirect('/auth/signup/complete');
     }

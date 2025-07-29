@@ -12,12 +12,22 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export function SignUpOtp({ className, ...props }: Props) {
-  const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
-  const [showOtpInput, setShowOtpInput] = useState(false);
+  const [
+    qrCodeUrl,
+    setQrCodeUrl,
+  ] = useState<string>('');
+  const [
+    showOtpInput,
+    setShowOtpInput,
+  ] = useState(false);
 
-  const [state, action, isPending] = useActionState<SetupOtpFormState, FormData>(
+  const [
+    state,
+    action,
+    isPending,
+  ] = useActionState<SetupOtpFormState, FormData>(
     setupOtpAction,
-    { step: 1, message: '' }
+    { step: 1, message: '', }
   );
 
   useEffect(() => {
@@ -27,7 +37,7 @@ export function SignUpOtp({ className, ...props }: Props) {
     if (state.step === 3) {
       setShowOtpInput(true);
     }
-  }, [state]);
+  }, [ state, ]);
 
   const footerContent = (
     <div>
@@ -44,7 +54,7 @@ export function SignUpOtp({ className, ...props }: Props) {
   return (
     <div className={cn(className)} {...props}>
       <form action={action}>
-        
+
         <div className='space-y-6'>
           {state.step === 1 && (
             <div className='text-center'>
@@ -56,7 +66,9 @@ export function SignUpOtp({ className, ...props }: Props) {
                 disabled={isPending}
                 className='w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50'
               >
-                {isPending ? 'OTP 발급 중...' : 'OTP 발급'}
+                {isPending
+                  ? 'OTP 발급 중...'
+                  : 'OTP 발급'}
               </button>
             </div>
           )}
@@ -102,13 +114,18 @@ export function SignUpOtp({ className, ...props }: Props) {
                 disabled={isPending}
                 className='w-full mt-4 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50'
               >
-                {isPending ? '계정 생성 중...' : '계정 생성 완료'}
+                {isPending
+                  ? '계정 생성 중...'
+                  : '계정 생성 완료'}
               </button>
             </div>
           )}
 
           {state.message && (
-            <div className={`text-sm ${state.message.includes('성공') ? 'text-green-600' : 'text-red-600'}`}>
+            <div className={`text-sm ${state.message.includes('성공')
+              ? 'text-green-600'
+              : 'text-red-600'}`}
+            >
               {state.message}
             </div>
           )}

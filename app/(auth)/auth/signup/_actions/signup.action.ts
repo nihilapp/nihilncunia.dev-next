@@ -2,9 +2,9 @@
 
 import { redirect } from 'next/navigation';
 
+import type { SignUpFormState, SignUpData } from '@/_entities/auth/auth.types';
 import { Logger } from '@/_libs/tools';
 import { CookieHelper } from '@/_libs/tools/cookie.tools';
-import type { SignUpFormState, SignUpData } from '@/_entities/auth/auth.types';
 
 export async function signUpAction(
   prevState: SignUpFormState,

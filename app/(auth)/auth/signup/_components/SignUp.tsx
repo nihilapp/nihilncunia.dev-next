@@ -3,10 +3,10 @@
 import React, { useActionState } from 'react';
 
 import { useAuthCard } from '@/_entities/auth';
+import type { SignUpFormState } from '@/_entities/auth/auth.types';
 import { cn } from '@/_libs';
 
 import { signUpAction } from '../_actions/signup.action';
-import type { SignUpFormState } from '@/_entities/auth/auth.types';
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;

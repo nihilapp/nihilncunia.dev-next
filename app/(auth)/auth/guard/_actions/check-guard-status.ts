@@ -13,15 +13,12 @@ export async function checkGuardStatus() {
     const guardCompleted = await CookieHelper.get<string>('guard_completed');
     const isCompleted = guardCompleted === 'true';
 
-    Logger.auth('가드 상태 확인', { isCompleted });
+    Logger.auth('가드 상태 확인', { isCompleted, });
 
-    return {
-      isCompleted,
-    };
-  } catch (error) {
-    Logger.authError('가드 상태 확인 실패', { error });
-    return {
-      isCompleted: false,
-    };
+    return { isCompleted, };
+  }
+  catch (error) {
+    Logger.authError('가드 상태 확인 실패', { error, });
+    return { isCompleted: false, };
   }
 }

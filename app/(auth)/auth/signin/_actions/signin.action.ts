@@ -2,8 +2,8 @@
 
 import { redirect } from 'next/navigation';
 
-import { Logger } from '@/_libs/tools/logger.tools';
 import { createActionClient } from '@/_libs/server/supabase';
+import { Logger } from '@/_libs/tools/logger.tools';
 
 export type SignInFormState = {
   step: number;
@@ -27,7 +27,7 @@ export async function signInAction(
 
     const supabase = await createActionClient();
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error, } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -41,7 +41,7 @@ export async function signInAction(
     }
 
     if (data.user) {
-      Logger.auth('이메일/비밀번호 인증 성공, OTP 인증 단계로 이동', { email, userId: data.user.id });
+      Logger.auth('이메일/비밀번호 인증 성공, OTP 인증 단계로 이동', { email, userId: data.user.id, });
       redirect(`/auth/signin/otp?email=${encodeURIComponent(email)}`);
     }
 

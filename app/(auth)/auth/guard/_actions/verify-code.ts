@@ -25,7 +25,7 @@ export async function verifyCode(passCode: string): Promise<VerifyCodeResult> {
     const rateLimitResult = await RateLimiter.checkLimit(identifier, 'passcode');
 
     if (!rateLimitResult.allowed) {
-      Logger.authError('패스코드 검증 rate limit 초과', { identifier, lockTimeLeft: rateLimitResult.lockTimeLeft });
+      Logger.authError('패스코드 검증 rate limit 초과', { identifier, lockTimeLeft: rateLimitResult.lockTimeLeft, });
       return {
         step: 2,
         message: rateLimitResult.message,
@@ -45,7 +45,7 @@ export async function verifyCode(passCode: string): Promise<VerifyCodeResult> {
     Logger.auth('저장된 패스코드 확인');
 
     const isValid = passCode === storedCode;
-    Logger.auth('패스코드 비교 결과', { isValid });
+    Logger.auth('패스코드 비교 결과', { isValid, });
 
     // Rate limiting 기록
     await RateLimiter.recordAttempt(identifier, 'passcode', isValid);
@@ -68,8 +68,9 @@ export async function verifyCode(passCode: string): Promise<VerifyCodeResult> {
       step: 2,
       message: warningMessage,
     };
-  } catch (error) {
-    Logger.authError('패스코드 검증 중 예외 발생', { error });
+  }
+  catch (error) {
+    Logger.authError('패스코드 검증 중 예외 발생', { error, });
 
     return {
       step: 1,

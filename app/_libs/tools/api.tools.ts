@@ -13,9 +13,7 @@ export class ApiHelper {
   private static config: AxiosRequestConfig = {
     withCredentials: true,
     baseURL: this.baseURL,
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json', },
   };
 
   static createInstance() {
@@ -54,9 +52,7 @@ export class ApiHelper {
       data,
       {
         ...config,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+        headers: { 'Content-Type': 'multipart/form-data', },
       }
     );
   }
@@ -148,9 +144,7 @@ export class ApiHelper {
   ) {
     const { data, } = await this.delete<D>(
       url,
-      {
-        data: postData,
-      }
+      { data: postData, }
     );
 
     return data;
@@ -159,9 +153,7 @@ export class ApiHelper {
   static async deletesQuery<D, P>(url: string, deleteData: P) {
     const { data, } = await this.delete<D>(
       url,
-      {
-        data: deleteData,
-      }
+      { data: deleteData, }
     );
 
     return data;
