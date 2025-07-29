@@ -6,9 +6,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 
+import { signOut } from '@/(common)/_actions';
 import { Button } from '@/(common)/_components/ui/button';
 import { cn } from '@/_libs';
-import { createActionClient } from '@/_libs/server/supabase';
 
 interface Props
   extends React.HTMLAttributes<HTMLDivElement>,
@@ -31,9 +31,13 @@ export function Home({ className, session, ...props }: Props) {
 
   const handleLogout = async () => {
     try {
-      const supabase = createActionClient();
-      await supabase.auth.signOut();
-      router.refresh();
+      const result = await signOut();
+      if (result.success) {
+        router.refresh();
+      }
+      else {
+        console.error('로그아웃 실패:', result.error);
+      }
     }
     catch (error) {
       console.error('로그아웃 실패:', error);

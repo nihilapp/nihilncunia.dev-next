@@ -1,5 +1,6 @@
 'use server';
 
+import { passcodeSchema } from '@/_entities/auth';
 import { CookieHelper } from '@/_libs/tools/cookie.tools';
 import { Logger } from '@/_libs/tools/logger.tools';
 import { RateLimiter } from '@/_libs/tools/rate-limit.tools';
@@ -20,6 +21,18 @@ type VerifyCodeResult = {
  */
 export async function verifyCode(passCode: string): Promise<VerifyCodeResult> {
   try {
+    const validationResult = passcodeSchema.safeParse({ passCode, });
+
+    if (!validationResult.success) {
+      const errorMessage = validationResult.error.issues[0]?.message || '입력값이 올바르지 않습니다.';
+      return {
+        step: 2,
+        message: errorMessage,
+      };
+    }
+
+    const { passCode: validatedPassCode, } = validationResult.data;
+
     // Rate limiting 확인
     const identifier = 'passcode_verify'; // 패스코드는 시스템 전체에 하나만 존재
     const rateLimitResult = await RateLimiter.checkLimit(identifier, 'passcode');
@@ -44,7 +57,7 @@ export async function verifyCode(passCode: string): Promise<VerifyCodeResult> {
     }
     Logger.auth('저장된 패스코드 확인');
 
-    const isValid = passCode === storedCode;
+    const isValid = validatedPassCode === storedCode;
     Logger.auth('패스코드 비교 결과', { isValid, });
 
     // Rate limiting 기록

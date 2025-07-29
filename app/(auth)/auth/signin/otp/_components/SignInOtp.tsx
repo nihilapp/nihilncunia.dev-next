@@ -1,9 +1,11 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useSearchParams } from 'next/navigation';
-import React, { useActionState } from 'react';
+import React, { useActionState, startTransition } from 'react';
+import { useForm } from 'react-hook-form';
 
-import { useAuthCard } from '@/_entities/auth';
+import { useAuthCard, otpSchema, type OtpFormData } from '@/_entities/auth';
 import { cn } from '@/_libs';
 
 import { verifyOtpAction, VerifyOtpFormState } from '../_actions/verify-otp.action';
@@ -25,6 +27,15 @@ export function SignInOtp({ className, ...props }: Props) {
     { step: 1, message: '', }
   );
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, },
+  } = useForm<OtpFormData>({
+    resolver: zodResolver(otpSchema),
+    defaultValues: { email, },
+  });
+
   const footerContent = (
     <div>
       OTP 인증 단계
@@ -37,11 +48,18 @@ export function SignInOtp({ className, ...props }: Props) {
     footerContent
   );
 
+  const onSubmit = (data: OtpFormData) => {
+    const formData = new FormData();
+    formData.append('email', data.email);
+    formData.append('otpCode', data.otpCode);
+    startTransition(() => {
+      action(formData);
+    });
+  };
+
   return (
     <div className={cn(className)} {...props}>
-      <form action={action}>
-        <input type='hidden' name='email' value={email} />
-
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className='space-y-4'>
           <div className='text-center mb-4'>
             <p className='text-sm text-gray-600'>
@@ -60,15 +78,17 @@ export function SignInOtp({ className, ...props }: Props) {
             <input
               type='text'
               id='otpCode'
-              name='otpCode'
+              {...register('otpCode')}
               maxLength={6}
               pattern='[0-9]{6}'
-              required
               disabled={isPending}
               className='w-full text-center text-2xl py-3 px-4 border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:opacity-50'
               placeholder='000000'
               autoComplete='one-time-code'
             />
+            {errors.otpCode && (
+              <p className='mt-1 text-sm text-red-600'>{errors.otpCode.message}</p>
+            )}
           </div>
 
           {state.message && (

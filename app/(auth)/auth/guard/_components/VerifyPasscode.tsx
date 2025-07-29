@@ -1,14 +1,16 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { useSearchParams } from 'next/navigation';
-import React, { useActionState } from 'react';
+import React, { useActionState, startTransition } from 'react';
+import { useForm } from 'react-hook-form';
 
 import { passCodeAction } from '@/(auth)/auth/guard/_actions/passcode.action';
 import { Button } from '@/(common)/_components/ui/button';
 import { Input } from '@/(common)/_components/ui/input';
 import { Label } from '@/(common)/_components/ui/label';
-import { useAuthCard } from '@/_entities/auth';
+import { useAuthCard, passcodeSchema, type PasscodeFormData } from '@/_entities/auth';
 import { cn } from '@/_libs';
 
 interface Props
@@ -39,34 +41,38 @@ export function VerifyPasscode({ className, ...props }: Props) {
   const searchParams = useSearchParams();
   const callback = searchParams.get('callback');
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, },
+  } = useForm<PasscodeFormData>({ resolver: zodResolver(passcodeSchema), });
+
   useAuthCard(
     '인증 코드 확인',
     '전송된 인증 코드를 입력해주세요.'
   );
 
+  const onSubmit = (data: PasscodeFormData) => {
+    const formData = new FormData();
+    formData.append('_action', 'verify');
+    formData.append('passCode', data.passCode);
+    if (callback) {
+      formData.append('callback', callback);
+    }
+    startTransition(() => {
+      action(formData);
+    });
+  };
+
   return (
     <form
-      action={action}
+      onSubmit={handleSubmit(onSubmit)}
       className={cn(
         cssVariants({}),
         className
       )}
       {...props}
     >
-      <input
-        type='hidden'
-        name='_action'
-        value='verify'
-      />
-
-      {callback && (
-        <input
-          type='hidden'
-          name='callback'
-          value={callback}
-        />
-      )}
-
       <div className='w-full max-w-xs space-y-2'>
         <Label htmlFor='passCode'>
           인증 코드
@@ -74,12 +80,14 @@ export function VerifyPasscode({ className, ...props }: Props) {
 
         <Input
           id='passCode'
-          name='passCode'
+          {...register('passCode')}
           type='text'
           placeholder='인증 코드를 입력하세요'
           className='w-full'
-          required
         />
+        {errors.passCode && (
+          <p className='text-sm text-red-600'>{errors.passCode.message}</p>
+        )}
       </div>
 
       <Button

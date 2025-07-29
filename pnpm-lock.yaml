@@ -175,8 +175,8 @@ importers:
         specifier: ^9.31.0
         version: 9.31.0
       '@google/gemini-cli':
-        specifier: ^0.1.13
-        version: 0.1.13(@types/react@19.1.8)
+        specifier: ^0.1.14
+        version: 0.1.14(@modelcontextprotocol/sdk@1.16.0)(@types/react@19.1.8)
       '@radix-ui/react-slot':
         specifier: ^1.2.3
         version: 1.2.3(@types/react@19.1.8)(react@19.1.0)
@@ -1201,12 +1201,12 @@ packages:
   '@floating-ui/utils@0.2.10':
     resolution: {integrity: sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==}
 
-  '@google/gemini-cli-core@0.1.13':
-    resolution: {integrity: sha512-Vx3CbRpLJiGs/sj4SXlGH2ALKyON5skV/p+SCAoRuS6yRsANS1+diEeXbp6jlWT2TTiGoa8+GolqeNIU7wbN8w==}
+  '@google/gemini-cli-core@0.1.14':
+    resolution: {integrity: sha512-QruXDPr1I1FZuHv4F+apyCRw8uQDclM1LAZYTcUV6Ywa1CW/J5K3jm7MFtsjNxwGzYbMwzpYa/X+ok6qFYJPww==}
     engines: {node: '>=20'}
 
-  '@google/gemini-cli@0.1.13':
-    resolution: {integrity: sha512-FsewDHFr+1htYLl0sNa4KqOh32xIS5cZK0wMrpqeyEovU5M0PO0QMryZWXb8lj1PYjnHcS0wxm/zq4Lh06VZLw==}
+  '@google/gemini-cli@0.1.14':
+    resolution: {integrity: sha512-Uh6HxrN5OSaxfrR1OJ3V3CUUp8o+UHp1f1N5DwjlC+FPh55m5dlkWXBkUiwqmktKHEoOBuySy2oX5nSZAwf2og==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -1252,6 +1252,9 @@ packages:
   '@humanwhocodes/retry@0.4.3':
     resolution: {integrity: sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==}
     engines: {node: '>=18.18'}
+
+  '@iarna/toml@2.2.5':
+    resolution: {integrity: sha512-trnsAYxU3xnS1gPHPyU961coFyLkh4gAD/0zQ5mymY4yOZ+CYvsPqUbOFSw0aDM4y0tV7tiFxL/1XfXPNC6IPg==}
 
   '@img/sharp-darwin-arm64@0.34.3':
     resolution: {integrity: sha512-ryFMfvxxpQRsgZJqBd4wsttYQbCxsJksrv9Lw/v798JcQ8+w84mBWuXwl+TT0WJ/WrYOLaYpwQXi3sA9nTIaIg==}
@@ -2971,6 +2974,9 @@ packages:
 
   character-reference-invalid@2.0.1:
     resolution: {integrity: sha512-iBZ4F4wRbyORVsu0jPV7gXkOsGYjGHPmAyv+HiHG8gi5PtC9KI2j1+v8/tlibRvjoWX027ypmG/n0HtO5t7unw==}
+
+  chardet@2.1.0:
+    resolution: {integrity: sha512-bNFETTG/pM5ryzQ9Ad0lJOTa6HWD/YsScAR3EnCPZRPlQh77JocYktSHOUHelyhm8IARL+o4c4F1bP5KVOjiRA==}
 
   chokidar@4.0.3:
     resolution: {integrity: sha512-Qgzu8kfBvo+cA4962jnP1KkS6Dop5NS6g7R5LFYJr4b8Ub94PPQXUksCw9PvXoeXPRRddRNC5C1JQUR2SMGtnA==}
@@ -7078,7 +7084,7 @@ snapshots:
 
   '@floating-ui/utils@0.2.10': {}
 
-  '@google/gemini-cli-core@0.1.13':
+  '@google/gemini-cli-core@0.1.14':
     dependencies:
       '@google/genai': 1.9.0(@modelcontextprotocol/sdk@1.16.0)
       '@modelcontextprotocol/sdk': 1.16.0
@@ -7091,6 +7097,7 @@ snapshots:
       '@types/glob': 8.1.0
       '@types/html-to-text': 9.0.4
       ajv: 8.17.1
+      chardet: 2.1.0
       diff: 7.0.0
       dotenv: 17.2.0
       glob: 10.4.5
@@ -7111,9 +7118,11 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@google/gemini-cli@0.1.13(@types/react@19.1.8)':
+  '@google/gemini-cli@0.1.14(@modelcontextprotocol/sdk@1.16.0)(@types/react@19.1.8)':
     dependencies:
-      '@google/gemini-cli-core': 0.1.13
+      '@google/gemini-cli-core': 0.1.14
+      '@google/genai': 1.9.0(@modelcontextprotocol/sdk@1.16.0)
+      '@iarna/toml': 2.2.5
       '@types/update-notifier': 6.0.8
       command-exists: 1.2.9
       diff: 7.0.0
@@ -7137,7 +7146,9 @@ snapshots:
       strip-json-comments: 3.1.1
       update-notifier: 7.3.1
       yargs: 17.7.2
+      zod: 3.25.76
     transitivePeerDependencies:
+      - '@modelcontextprotocol/sdk'
       - '@types/react'
       - bufferutil
       - encoding
@@ -7186,6 +7197,8 @@ snapshots:
   '@humanwhocodes/retry@0.3.1': {}
 
   '@humanwhocodes/retry@0.4.3': {}
+
+  '@iarna/toml@2.2.5': {}
 
   '@img/sharp-darwin-arm64@0.34.3':
     optionalDependencies:
@@ -8955,6 +8968,8 @@ snapshots:
   character-entities@2.0.2: {}
 
   character-reference-invalid@2.0.1: {}
+
+  chardet@2.1.0: {}
 
   chokidar@4.0.3:
     dependencies:

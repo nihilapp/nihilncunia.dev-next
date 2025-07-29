@@ -1,8 +1,21 @@
 'use client';
 
-import React, { useActionState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
+import React, { useActionState, startTransition, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 
-import { useAuthCard } from '@/_entities/auth';
+import { Button } from '@/(common)/_components/ui/button';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/(common)/_components/ui/form';
+import { Input } from '@/(common)/_components/ui/input';
+import { useAuthCard, signInSchema, type SignInFormData } from '@/_entities/auth';
 import { cn } from '@/_libs';
 
 import { signInAction, SignInFormState } from '../_actions/signin.action';
@@ -21,9 +34,39 @@ export function SignIn({ className, ...props }: Props) {
     { step: 1, message: '', }
   );
 
+  const form = useForm<SignInFormData>({
+    resolver: zodResolver(signInSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
+
+  const { handleSubmit, trigger, } = form;
+
   const footerContent = (
-    <div>
-      footer
+    <div className='space-y-2 text-center w-full'>
+      <div className='text-sm text-gray-600'>
+        계정이 없으신가요?
+        {' '}
+        <Link
+          href='/auth/signup'
+          className='text-indigo-600 hover:text-indigo-500 font-medium transition-colors'
+        >
+          계정 생성
+        </Link>
+      </div>
+
+      <div className='text-sm text-gray-600'>
+        비밀번호를 잊으셨나요?
+        {' '}
+        <Link
+          href='/auth/forgot-password'
+          className='text-indigo-600 hover:text-indigo-500 font-medium transition-colors'
+        >
+          비밀번호 재설정
+        </Link>
+      </div>
     </div>
   );
 
@@ -33,37 +76,60 @@ export function SignIn({ className, ...props }: Props) {
     footerContent
   );
 
+  useEffect(() => {
+    trigger();
+  }, [ trigger, ]);
+
+  const onSubmit = (data: SignInFormData) => {
+    const formData = new FormData();
+    formData.append('email', data.email);
+    formData.append('password', data.password);
+    startTransition(() => {
+      action(formData);
+    });
+  };
+
   return (
     <div className={cn(className)} {...props}>
-      <form action={action}>
-        <div className='space-y-4'>
-          <div>
-            <label htmlFor='email' className='block text-sm font-medium text-gray-700'>
-              이메일
-            </label>
-            <input
-              type='email'
-              id='email'
-              name='email'
-              required
-              disabled={isPending}
-              className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:opacity-50'
-            />
-          </div>
+      <Form {...form}>
+        <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+          <FormField
+            control={form.control}
+            name='email'
+            render={({ field, }) => (
+              <FormItem>
+                <FormLabel>이메일</FormLabel>
+                <FormControl>
+                  <Input
+                    type='email'
+                    placeholder='이메일을 입력해주세요'
+                    disabled={isPending}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-          <div>
-            <label htmlFor='password' className='block text-sm font-medium text-gray-700'>
-              비밀번호
-            </label>
-            <input
-              type='password'
-              id='password'
-              name='password'
-              required
-              disabled={isPending}
-              className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:opacity-50'
-            />
-          </div>
+          <FormField
+            control={form.control}
+            name='password'
+            render={({ field, }) => (
+              <FormItem>
+                <FormLabel>비밀번호</FormLabel>
+                <FormControl>
+                  <Input
+                    type='password'
+                    placeholder='비밀번호를 입력해주세요'
+                    disabled={isPending}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           {state.message && (
             <div className='text-sm text-red-600'>
@@ -71,17 +137,18 @@ export function SignIn({ className, ...props }: Props) {
             </div>
           )}
 
-          <button
+          <Button
             type='submit'
             disabled={isPending}
-            className='w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50'
+            className='w-full bg-blue-500 hover:bg-blue-600 cursor-pointer'
+            size='lg'
           >
             {isPending
               ? '로그인 중...'
               : '로그인'}
-          </button>
-        </div>
-      </form>
+          </Button>
+        </form>
+      </Form>
     </div>
   );
 }

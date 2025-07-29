@@ -1,8 +1,21 @@
 'use client';
 
-import React, { useActionState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
+import React, { useActionState, startTransition, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 
-import { useAuthCard } from '@/_entities/auth';
+import { Button } from '@/(common)/_components/ui/button';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/(common)/_components/ui/form';
+import { Input } from '@/(common)/_components/ui/input';
+import { useAuthCard, signUpSchema, type SignUpFormData } from '@/_entities/auth';
 import type { SignUpFormState } from '@/_entities/auth/auth.types';
 import { cn } from '@/_libs';
 
@@ -22,9 +35,31 @@ export function SignUp({ className, ...props }: Props) {
     { step: 1, message: '', }
   );
 
+  const form = useForm<SignUpFormData>({
+    resolver: zodResolver(signUpSchema),
+    defaultValues: {
+      email: '',
+      username: '',
+      password: '',
+      confirmPassword: '',
+      role: 'SUPER_ADMIN',
+    },
+  });
+
+  const { handleSubmit, trigger, } = form;
+
   const footerContent = (
-    <div>
-      footer
+    <div className='space-y-2 text-center w-full'>
+      <div className='text-sm text-gray-600'>
+        이미 계정이 있으신가요?
+        {' '}
+        <Link
+          href='/auth/signin'
+          className='text-indigo-600 hover:text-indigo-500 font-medium transition-colors'
+        >
+          로그인
+        </Link>
+      </div>
     </div>
   );
 
@@ -34,67 +69,101 @@ export function SignUp({ className, ...props }: Props) {
     footerContent
   );
 
+  useEffect(() => {
+    trigger();
+  }, [ trigger, ]);
+
+  const onSubmit = (data: SignUpFormData) => {
+    const formData = new FormData();
+    formData.append('email', data.email);
+    formData.append('password', data.password);
+    formData.append('confirmPassword', data.confirmPassword);
+    formData.append('username', data.username);
+    formData.append('role', data.role || 'SUPER_ADMIN');
+    startTransition(() => {
+      action(formData);
+    });
+  };
+
   return (
     <div className={cn(className)} {...props}>
-      <form action={action}>
-        <input type='hidden' name='role' value='SUPER_ADMIN' />
+      <Form {...form}>
+        <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+          <FormField
+            control={form.control}
+            name='email'
+            render={({ field, }) => (
+              <FormItem>
+                <FormLabel>이메일</FormLabel>
+                <FormControl>
+                  <Input
+                    type='email'
+                    placeholder='이메일을 입력해주세요'
+                    disabled={isPending}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <div className='space-y-4'>
-          <div>
-            <label htmlFor='email' className='block text-sm font-medium text-gray-700'>
-              이메일
-            </label>
-            <input
-              type='email'
-              id='email'
-              name='email'
-              required
-              disabled={isPending}
-              className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:opacity-50'
-            />
-          </div>
+          <FormField
+            control={form.control}
+            name='username'
+            render={({ field, }) => (
+              <FormItem>
+                <FormLabel>사용자명</FormLabel>
+                <FormControl>
+                  <Input
+                    type='text'
+                    placeholder='사용자명을 입력해주세요'
+                    disabled={isPending}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-          <div>
-            <label htmlFor='username' className='block text-sm font-medium text-gray-700'>
-              사용자명
-            </label>
-            <input
-              type='text'
-              id='username'
-              name='username'
-              required
-              disabled={isPending}
-              className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:opacity-50'
-            />
-          </div>
+          <FormField
+            control={form.control}
+            name='password'
+            render={({ field, }) => (
+              <FormItem>
+                <FormLabel>비밀번호</FormLabel>
+                <FormControl>
+                  <Input
+                    type='password'
+                    placeholder='비밀번호를 입력해주세요'
+                    disabled={isPending}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-          <div>
-            <label htmlFor='password' className='block text-sm font-medium text-gray-700'>
-              비밀번호
-            </label>
-            <input
-              type='password'
-              id='password'
-              name='password'
-              required
-              disabled={isPending}
-              className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:opacity-50'
-            />
-          </div>
-
-          <div>
-            <label htmlFor='confirmPassword' className='block text-sm font-medium text-gray-700'>
-              비밀번호 확인
-            </label>
-            <input
-              type='password'
-              id='confirmPassword'
-              name='confirmPassword'
-              required
-              disabled={isPending}
-              className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:opacity-50'
-            />
-          </div>
+          <FormField
+            control={form.control}
+            name='confirmPassword'
+            render={({ field, }) => (
+              <FormItem>
+                <FormLabel>비밀번호 확인</FormLabel>
+                <FormControl>
+                  <Input
+                    type='password'
+                    placeholder='비밀번호를 다시 입력해주세요'
+                    disabled={isPending}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           {state.message && (
             <div className='text-sm text-red-600'>
@@ -102,17 +171,18 @@ export function SignUp({ className, ...props }: Props) {
             </div>
           )}
 
-          <button
+          <Button
             type='submit'
             disabled={isPending}
-            className='w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50'
+            className='w-full bg-blue-500 hover:bg-blue-600 cursor-pointer'
+            size='lg'
           >
             {isPending
-              ? 'OTP 생성...'
+              ? 'OTP 생성 중...'
               : 'OTP 생성'}
-          </button>
-        </div>
-      </form>
+          </Button>
+        </form>
+      </Form>
     </div>
   );
 }

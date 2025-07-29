@@ -6,7 +6,6 @@ import React from 'react';
 import '@/_styles/tailwind.css';
 
 import { siteConfig } from './_config';
-import { Providers } from './_layouts';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -66,9 +65,7 @@ export default function AppLayout({ children, }: Props) {
         <GoogleAnalytics gaId={siteConfig.googleAnalyticsId} />
       </head>
       <body suppressHydrationWarning>
-        <Providers>
-          {children}
-        </Providers>
+        {children}
       </body>
     </html>
   );
