@@ -3,9 +3,10 @@ import { Metadata } from 'next';
 import Script from 'next/script';
 import React from 'react';
 
-import '@/_styles/tailwind.css';
-
 import { siteConfig } from './_config';
+import { Providers } from './_layouts';
+
+import '@/_styles/tailwind.css';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -42,7 +43,9 @@ export const metadata: Metadata = {
       },
     ],
   },
-  alternates: { canonical: siteConfig.url, },
+  alternates: {
+    canonical: siteConfig.url,
+  },
   other: {
     'google-site-verification': siteConfig.googleVerfi,
     'version': siteConfig.version,
@@ -65,7 +68,9 @@ export default function AppLayout({ children, }: Props) {
         <GoogleAnalytics gaId={siteConfig.googleAnalyticsId} />
       </head>
       <body suppressHydrationWarning>
-        {children}
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );

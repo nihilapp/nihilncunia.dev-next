@@ -7,7 +7,7 @@ import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import tseslint from 'typescript-eslint';
 
-export default tseslint.config(
+const config = [
   // 기본 추천 설정
   js.configs.recommended,
   ...tseslint.configs.recommended,
@@ -25,7 +25,11 @@ export default tseslint.config(
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
-      parserOptions: { ecmaFeatures: { jsx: true, }, },
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
       globals: {
         browser: true,
         commonjs: true,
@@ -49,7 +53,13 @@ export default tseslint.config(
   },
 
   // React 설정
-  { settings: { react: { version: 'detect', }, }, },
+  {
+    settings: {
+      react: {
+        version: 'detect',
+      },
+    },
+  },
 
   // 모든 파일에 적용되는 규칙
   {
@@ -61,13 +71,13 @@ export default tseslint.config(
       'no-unexpected-multiline': 'off',
       'no-use-before-define': 'off',
       'spaced-comment': 'off',
-      '@stylistic/function-call-argument-newline': [
+      'function-call-argument-newline': [
         'error',
         'consistent',
       ],
-      '@stylistic/function-paren-newline': [
+      'function-paren-newline': [
         'error',
-        'consistent',
+        'multiline',
       ],
       'no-multiple-empty-lines': [
         'error',
@@ -117,7 +127,7 @@ export default tseslint.config(
       '@stylistic/quotes': [
         'warn',
         'single',
-        { allowTemplateLiterals: 'always', },
+        { allowTemplateLiterals: true, },
       ],
       '@stylistic/semi': [
         'error',
@@ -141,23 +151,19 @@ export default tseslint.config(
         {
           ObjectExpression: {
             multiline: true,
-            consistent: false,
+            consistent: true,
           },
           ObjectPattern: {
             multiline: true,
-            consistent: false,
+            consistent: true,
           },
           ImportDeclaration: {
             multiline: true,
-            consistent: false,
+            consistent: true,
           },
           ExportDeclaration: {
             multiline: true,
             consistent: true,
-          },
-          TSTypeLiteral: {
-            multiline: true,
-            consistent: false,
           },
         },
       ],
@@ -173,7 +179,7 @@ export default tseslint.config(
       ],
       '@stylistic/object-property-newline': [
         'error',
-        { allowAllPropertiesOnSameLine: true, },
+        { allowAllPropertiesOnSameLine: false, },
       ],
       '@stylistic/array-element-newline': [
         'error',
@@ -186,6 +192,15 @@ export default tseslint.config(
       '@stylistic/jsx-quotes': [
         'error',
         'prefer-single',
+      ],
+      '@stylistic/indent': [
+        'error',
+        2,
+        {
+          FunctionDeclaration: { parameters: 1, },
+          FunctionExpression: { parameters: 1, },
+          CallExpression: { arguments: 1, },
+        },
       ],
       // import-x 규칙
       'import-x/extensions': 'off',
@@ -235,15 +250,17 @@ export default tseslint.config(
       ],
 
       // React 규칙
-      '@stylistic/indent': [
-        'error',
+      '@stylistic/jsx-indent': [
+        'warn',
         2,
         {
-          SwitchCase: 1,
-          FunctionDeclaration: { parameters: 1, },
-          FunctionExpression: { parameters: 1, },
-          CallExpression: { arguments: 1, },
+          checkAttributes: true,
+          indentLogicalExpressions: false,
         },
+      ],
+      '@stylistic/jsx-indent-props': [
+        'warn',
+        2,
       ],
       '@stylistic/jsx-curly-spacing': [
         'error',
@@ -391,12 +408,20 @@ export default tseslint.config(
       'import-x/no-default-export': 'off',
       'import-x/no-extraneous-dependencies': 'off',
     },
-    languageOptions: { globals: { node: true, }, },
+    languageOptions: {
+      globals: {
+        node: true,
+      },
+    },
   },
 
   // UI 컴포넌트 폴더 규칙 (선언 전 사용 허용)
   {
     files: [ 'app/_components/common/ui/**/*.tsx', ],
-    rules: { '@typescript-eslint/no-use-before-define': 'off', },
-  }
-);
+    rules: {
+      '@typescript-eslint/no-use-before-define': 'off',
+    },
+  },
+];
+
+export default config;

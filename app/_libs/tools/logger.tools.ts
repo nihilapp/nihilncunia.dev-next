@@ -42,19 +42,19 @@ export class Logger {
     const prefix = `[${timestamp}] [${level.toUpperCase()}] [${category}]`;
 
     switch (level) {
-      case 'error':
-        console.error(prefix, message, context || '');
-        break;
-      case 'warn':
-        console.warn(prefix, message, context || '');
-        break;
-      case 'debug':
-        if (process.env.NODE_ENV === 'development') {
-          console.debug(prefix, message, context || '');
-        }
-        break;
-      default:
-        console.log(prefix, message, context || '');
+    case 'error':
+      console.error(prefix, message, context || '');
+      break;
+    case 'warn':
+      console.warn(prefix, message, context || '');
+      break;
+    case 'debug':
+      if (process.env.NODE_ENV === 'development') {
+        console.debug(prefix, message, context || '');
+      }
+      break;
+    default:
+      console.log(prefix, message, context || '');
     }
   }
 
@@ -91,6 +91,20 @@ export class Logger {
    */
   static authError(message: string, context?: LogContext): void {
     this.log(this.formatMessage('error', 'AUTH', message, context));
+  }
+
+  /**
+   * 세션 관련 로그
+   */
+  static session(message: string, context?: LogContext): void {
+    this.log(this.formatMessage('info', 'SESSION', message, context));
+  }
+
+  /**
+   * 세션 에러 로그
+   */
+  static sessionError(message: string, context?: LogContext): void {
+    this.log(this.formatMessage('error', 'SESSION', message, context));
   }
 
   /**

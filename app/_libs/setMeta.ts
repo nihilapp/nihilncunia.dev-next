@@ -39,7 +39,11 @@ export const setMeta = (meta: SiteMetadata): Metadata => {
         alt: siteImageAlt,
       }, ],
     },
-    alternates: { canonical: siteUrl, },
-    other: { version: siteConfig.version, },
+    alternates: {
+      canonical: siteUrl,
+    },
+    other: {
+      version: siteConfig.version,
+    },
   };
 };

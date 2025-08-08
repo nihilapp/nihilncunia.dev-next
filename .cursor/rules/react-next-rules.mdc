@@ -3,6 +3,7 @@ description:
 globs:
 alwaysApply: true
 ---
+
 # React & Next.js 프로젝트 규칙 정리
 
 ---
@@ -10,29 +11,29 @@ alwaysApply: true
 ## React, Next.js 관련 규칙
 
 - 페이지 컴포넌트와 일반 컴포넌트의 작성 시 다음의 템플릿 '/file-template/component_example.md' 을 참고한다.
-- 컴포넌트 디자인 시 'shadcn' 컴포넌트를 사용한다. 해당 컴포넌트들은 '/app/(common)/_components/ui'에 위치한다.
-- 버튼은 'Button', 링크 버튼은 'LinkButton'을 사용한다. 모두 '/app/(common)/_components/ui'에 있다.
-- _components나 _layouts 폴더에는 반드시 'index.ts'를 만들고, 'export { 컴포넌트 } from ...' 형식으로 export 한다.
+- 컴포넌트 디자인 시 'shadcn' 컴포넌트를 사용한다. 해당 컴포넌트들은 '/app/(common)/\_components/ui'에 위치한다.
+- 버튼은 'Button', 링크 버튼은 'LinkButton'을 사용한다. 모두 '/app/(common)/\_components/ui'에 있다.
+- \_components나 \_layouts 폴더에는 반드시 'index.ts'를 만들고, 'export { 컴포넌트 } from ...' 형식으로 export 한다.
 - page.tsx에서는 반드시 export default를 사용한다.
 - 임포트 시 '@'는 'app' 폴더를 의미한다.
 - 로직 작성 시 가독성을 위해 공백 라인을 적극적으로 활용한다.
-- 공통 컴포넌트는 '/app/(common)/_components'에 생성하고, index.ts에 export 한다.
+- 공통 컴포넌트는 '/app/(common)/\_components'에 생성하고, index.ts에 export 한다.
 - shadcn이 아닌 직접 작성 컴포넌트는 반드시 'class-variance-authority'를 사용한다.
 - 데이터 존재 여부 확인 변수는 'find'로 시작해야 한다.
 - page.tsx에는 'use client'를 사용하지 않는다(서버 컴포넌트 유지).
-- page.tsx에는 반드시 metadata를 작성한다. (setMeta 함수는 'app/_libs'에 위치)
+- page.tsx에는 반드시 metadata를 작성한다. (setMeta 함수는 'app/\_libs'에 위치) title, url 을 필수로 기재한다.
 - 동적 페이지의 metadata는 generateMetadata 함수를 사용한다.
 - page.tsx에서 파라미터는 'params' 변수명으로 받고, Promise 타입을 사용한다.
 - 페이지 컴포넌트는 별도 파일로 만들고, cva 구조를 유지한다.
 - 폼 관련 함수명은 onClick, onChange 등 수식어를 붙인다.
-- 직접 작성한 아이콘은 '/app/_icons'에 위치한다.
+- 직접 작성한 아이콘은 '/app/\_icons'에 위치한다.
 
 ---
 
 ## 기타 Next.js/React 개발 규칙
 
 - 폴더 구조는 app/(common), app/(auth), app/(admin) 등 라우트 그룹을 사용한다.
-- 공통 컴포넌트, 도메인별 _entities, _libs, _icons 등 폴더 구조를 따른다.
+- 공통 컴포넌트, 도메인별 \_entities, \_libs, \_icons 등 폴더 구조를 따른다.
 - 스타일링은 TailwindCSS, Styled Components, shadcn/ui, class-variance-authority를 조합해 사용한다.
 - 반응형 디자인을 기본으로 고려한다.
 - SSR/CSR 구분에 유의하며, 서버 컴포넌트와 클라이언트 컴포넌트 역할을 명확히 한다.
@@ -40,10 +41,3 @@ alwaysApply: true
 ---
 
 > 이 규칙은 리액트/넥스트 기반 프로젝트의 일관성과 생산성, 유지보수성을 높이기 위한 가이드입니다.
-
-
-
-
-
-
-

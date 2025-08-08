@@ -1,1 +1,0 @@
-export { useAuthCard } from './useAuthCard';

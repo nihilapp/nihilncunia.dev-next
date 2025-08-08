@@ -26,24 +26,24 @@ export class CookieHelper {
     while ((match = regex.exec(expire)) !== null) {
       const value = parseInt(match[1], 10);
       switch (match[2]) {
-        case 'y':
-          seconds += value * 31536000; // 365일 기준
-          break;
-        case 'M':
-          seconds += value * 2592000; // 30일 기준
-          break;
-        case 'd':
-          seconds += value * 86400;
-          break;
-        case 'h':
-          seconds += value * 3600;
-          break;
-        case 'm':
-          seconds += value * 60;
-          break;
-        case 's':
-          seconds += value;
-          break;
+      case 'y':
+        seconds += value * 31536000; // 365일 기준
+        break;
+      case 'M':
+        seconds += value * 2592000; // 30일 기준
+        break;
+      case 'd':
+        seconds += value * 86400;
+        break;
+      case 'h':
+        seconds += value * 3600;
+        break;
+      case 'm':
+        seconds += value * 60;
+        break;
+      case 's':
+        seconds += value;
+        break;
       }
     }
     return seconds;

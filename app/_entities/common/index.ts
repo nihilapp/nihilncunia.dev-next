@@ -7,10 +7,10 @@ export { useLoading } from './hooks/useLoading';
 export { useDone } from './hooks/useDone';
 
 export type {
-  ApiError,
-  ApiResponse,
-  CreateResponse,
+  SuccessPayload,
+  ErrorPayload,
   SiteConfig,
   SiteMetadata,
-  MutationOptions
+  QueryOptionType,
+  MutationOptionsType
 } from './common.types';

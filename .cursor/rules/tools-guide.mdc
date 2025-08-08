@@ -1,48 +1,202 @@
 ---
 alwaysApply: true
 ---
-## 2. 날짜/시간 유틸리티: Calendar
 
-- dayjs 기반의 날짜 변환, 달력 데이터, 포맷 변환 등 제공
-- 예시:
-  ```ts
-  const now = tools.calendar.getNowDate();
-  const dateInfo = tools.calendar.getDateInfo();
-  const monthArr = tools.calendar.monthArray();
-  const formatted = tools.calendar.dateToFormat(new Date());
-  ```
+# Tools 헬퍼 가이드
 
 ---
 
-## 3. 암호화 유틸리티: Bcrypt
+## 개요
 
-- 비밀번호 해시 및 검증은 직접 구현하지 않고 아래 메소드를 사용
-- 예시:
-  ```ts
-  const hash = await tools.bcrypt.dataToHash('password');
-  const isValid = await tools.bcrypt.dataCompare(hash, 'password');
-  ```
+`@/tools` 폴더에는 프로젝트에서 사용하는 공통 유틸리티 헬퍼들이 위치합니다. 각 헬퍼는 독립적으로 import하여 사용합니다.
+
+## 파일 구조
+
+```
+app/_libs/tools/
+├── index.ts          # 모든 헬퍼 export
+├── axios.tools.ts    # HTTP 요청 처리
+├── bcrypt.tools.ts   # 비밀번호 해싱
+├── common.tools.ts   # 공통 유틸리티
+├── cookie.tools.ts   # 쿠키 처리
+├── date.tools.ts     # 날짜/시간 처리
+└── logger.tools.ts   # 로깅
+```
+
+## 각 헬퍼 설명
+
+### Api (`@/tools/axios.tools`)
+
+**위치**: `app/_libs/tools/axios.tools.ts`
+
+**주요 기능**:
+
+- HTTP API 요청 처리 (GET, POST, PATCH, PUT, DELETE)
+- 파일 업로드 지원
+- 자동 에러 처리 및 응답 타입 지정
+
+**사용 목적**:
+
+- API 라우트와의 통신
+- React Query의 queryFn/mutationFn에서 사용
+- 파일 업로드/다운로드
+
+**주요 메서드**:
+
+- `Api.getQuery<T>()` - GET 요청
+- `Api.postQuery<T, P>()` - POST 요청
+- `Api.patchQuery<T, P>()` - PATCH 요청
+- `Api.postWithFile<T, P>()` - 파일 업로드
+
+### BcryptHelper (`@/tools/bcrypt.tools`)
+
+**위치**: `app/_libs/tools/bcrypt.tools.ts`
+
+**주요 기능**:
+
+- 비밀번호 해싱 및 검증
+- bcryptjs 기반 암호화
+
+**사용 목적**:
+
+- 사용자 비밀번호 암호화
+- 로그인 시 비밀번호 검증
+
+**주요 메서드**:
+
+- `BcryptHelper.dataToHash(data)` - 평문을 해시로 변환
+- `BcryptHelper.dataCompare(hashedData, data)` - 해시와 평문 비교
+
+### CommonHelper (`@/tools/common.tools`)
+
+**위치**: `app/_libs/tools/common.tools.ts`
+
+**주요 기능**:
+
+- UUID/CUID 생성
+- 배열 처리 (분할, 섞기, 중복 제거 등)
+- 객체 처리 (깊은 복사, 속성 선택/제외)
+- 문자열 변환 (케이스 변환, 자르기, 패딩 등)
+- 데이터 변환 (JSON 파싱, null/undefined 처리)
+
+**사용 목적**:
+
+- 데이터 전처리 및 후처리
+- 유틸리티 함수 제공
+- 코드 재사용성 향상
+
+**주요 메서드**:
+
+- `CommonHelper.uuid()` - UUID 생성
+- `CommonHelper.arraySlice()` - 배열 분할
+- `CommonHelper.deepClone()` - 깊은 복사
+- `CommonHelper.camelCase()` - 케이스 변환
+
+### CookieHelper (`@/tools/cookie.tools`)
+
+**위치**: `app/_libs/tools/cookie.tools.ts`
+
+**주요 기능**:
+
+- 서버사이드 쿠키 관리
+- 쿠키 설정/조회/삭제
+- 만료 시간 문자열 파싱
+
+**사용 목적**:
+
+- 세션 관리
+- 사용자 인증 토큰 저장
+- 설정 정보 저장
+
+**주요 메서드**:
+
+- `CookieHelper.set()` - 쿠키 설정
+- `CookieHelper.get()` - 쿠키 조회
+- `CookieHelper.remove()` - 쿠키 삭제
+- `CookieHelper.parseExpireString()` - 만료 시간 파싱
+
+### DateHelper (`@/tools/date.tools`)
+
+**위치**: `app/_libs/tools/date.tools.ts`
+
+**주요 기능**:
+
+- 날짜/시간 처리 (Luxon 기반)
+- 한국 시간대 (Asia/Seoul) 지원
+- 날짜 포맷팅 및 계산
+- 상대적 시간 표시
+
+**사용 목적**:
+
+- 날짜 표시 및 계산
+- 시간대 처리
+- 사용자 친화적 시간 표시
+
+**주요 메서드**:
+
+- `DateHelper.now()` - 현재 시간
+- `DateHelper.format()` - 날짜 포맷팅
+- `DateHelper.add()` - 날짜 더하기
+- `DateHelper.toRelative()` - 상대적 시간
+
+### Logger (`@/tools/logger.tools`)
+
+**위치**: `app/_libs/tools/logger.tools.ts`
+
+**주요 기능**:
+
+- 구조화된 로깅
+- 카테고리별 로그 관리
+- 개발/프로덕션 환경 구분
+
+**사용 목적**:
+
+- 애플리케이션 모니터링
+- 디버깅 및 에러 추적
+- 사용자 행동 분석
+
+**주요 메서드**:
+
+- `Logger.apiRequest()` - API 요청 로그
+- `Logger.auth()` - 인증 로그
+- `Logger.error()` - 에러 로그
+- `Logger.userAction()` - 사용자 행동 로그
+
+## Import 방법
+
+각 헬퍼는 개별적으로 import하여 사용합니다:
+
+```typescript
+import { Api } from "@/tools/axios.tools";
+import { BcryptHelper } from "@/tools/bcrypt.tools";
+import { CommonHelper } from "@/tools/common.tools";
+import { CookieHelper } from "@/tools/cookie.tools";
+import { DateHelper } from "@/tools/date.tools";
+import { Logger } from "@/tools/logger.tools";
+```
+
+## 사용 예시
+
+```typescript
+// API 요청
+const response = await Api.getQuery<User[]>("/users");
+
+// 비밀번호 해싱
+const hashedPassword = await BcryptHelper.dataToHash("password123");
+
+// UUID 생성
+const userId = CommonHelper.uuid("user");
+
+// 쿠키 설정
+await CookieHelper.set("session", token, "7d");
+
+// 날짜 포맷팅
+const formattedDate = DateHelper.format(new Date(), "yyyy년 MM월 dd일");
+
+// 로그 기록
+Logger.apiRequest("GET", "/api/users", { userId });
+```
 
 ---
 
-## 4. 쿠키 유틸리티: Cookie
-
-- 서버사이드 쿠키 조작은 tools.cookie를 통해 일관성 있게 처리
-- 예시:
-  ```ts
-  await tools.cookie.set('token', 'abc', 3600);
-  const token = await tools.cookie.get('token');
-  await tools.cookie.remove('token');
-  ```
-
----
-
-## 5. 기타
-
-- 새로운 유틸리티가 추가될 경우, 반드시 이 가이드에 시그니처와 사용 예시를 추가합니다.
-- 직접 구현이 필요한 경우에도, 기존 헬퍼를 우선적으로 검토 후 재사용을 권장합니다.
-
----
-
-> 본 가이드는 유지보수성과 일관성을 높이기 위해 `@/_libs/tools`의 헬퍼를 적극적으로 활용하도록 안내합니다.  
-> 모든 개발자는 본 가이드를 숙지하고, 코드 작성 시 참고해야 합니다.
+> 이 가이드는 프로젝트에서 사용하는 공통 유틸리티 헬퍼들의 위치와 사용법을 안내합니다.
