@@ -36,7 +36,10 @@ export interface SiteMetadata {
 export interface SiteConfig {
   title: string;
   description: string;
-  url: string;
+  url: {
+    development: string;
+    production: string;
+  };
   type: OpenGraphType;
   cover: {
     link: string;

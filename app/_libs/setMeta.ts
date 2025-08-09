@@ -8,15 +8,18 @@ export const setMeta = (meta: SiteMetadata): Metadata => {
   const siteKeywords = meta.keywords
     ? `${siteConfig.keywords}, ${meta.keywords}`
     : siteConfig.keywords;
-  const siteUrl = `${siteConfig.url}${meta.url}`;
+  const url = process.env.NODE_ENV === 'development'
+    ? siteConfig.url.development
+    : siteConfig.url.production;
+  const siteUrl = `${url}${meta.url}`;
   const siteImageLink = meta.imageLink
-    ? `${siteConfig.url}${meta.imageLink}`
-    : `${siteConfig.url}${siteConfig.cover.link}`;
+    ? `${url}${meta.imageLink}`
+    : `${url}${siteConfig.cover.link}`;
   const siteImageAlt = meta.imageAlt || siteConfig.cover.alt;
   const siteType = meta.type || siteConfig.type;
 
   return {
-    metadataBase: new URL(siteConfig.url),
+    metadataBase: new URL(url),
     title: meta.title,
     description: siteDescription,
     keywords: siteKeywords,
