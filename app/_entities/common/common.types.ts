@@ -36,10 +36,7 @@ export interface SiteMetadata {
 export interface SiteConfig {
   title: string;
   description: string;
-  url: {
-    development: string;
-    production: string;
-  };
+  url: string;
   type: OpenGraphType;
   cover: {
     link: string;
@@ -56,5 +53,6 @@ export interface SiteConfig {
   googleVerfi: string;
   googleAdSrc: string;
   googleAnalyticsId: string;
-  apiRoute: string;
+  baseApiUrl: string;
+  apiVersion: string;
 }

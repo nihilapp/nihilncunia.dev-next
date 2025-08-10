@@ -56,3 +56,8 @@ node_modules/
 *.sw?
 # OS specific
 app/_prisma
+
+# config
+app/_config/private.config.json
+
+/generated/prisma

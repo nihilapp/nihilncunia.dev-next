@@ -1,0 +1,53 @@
+{
+  "global": {
+    "version": "프로젝트 버전을 입력하세요 (예: v0.0.0)"
+  },
+  "site": {
+    "title": "사이트 제목을 입력하세요",
+    "description": "사이트 설명을 입력하세요",
+    "keywords": "사이트 키워드를 입력하세요 (쉼표로 구분)",
+    "author": {
+      "name": "작성자 이름을 입력하세요",
+      "url": "작성자 URL을 입력하세요"
+    },
+    "type": "사이트 타입을 입력하세요 (예: website)",
+    "url": {
+      "development": "개발 환경 URL을 입력하세요 (예: http://localhost:3000)",
+      "production": "운영 환경 URL을 입력하세요 (예: https://yourdomain.com)"
+    },
+    "cover": {
+      "link": "대표 이미지 경로를 입력하세요 (예: /opengraph-image.png)",
+      "alt": "대표 이미지 대체 텍스트를 입력하세요"
+    },
+    "logo": "로고 이미지 경로를 입력하세요 (예: /nihil-logo.svg)",
+    "darkLogo": "다크모드 로고 이미지 경로를 입력하세요 (예: /nihil-logo-white.svg)",
+    "googleVerfi": "구글 사이트 인증 코드를 입력하세요 (필요시)",
+    "googleAdSrc": "구글 광고 스크립트 소스를 입력하세요 (필요시)",
+    "googleAnalyticsId": "구글 애널리틱스 ID를 입력하세요 (필요시)"
+  },
+  "nodemailer": {
+    "provider": {
+      "name": "메일 제공자 이름을 입력하세요(예: smtp.naver.com)",
+      "port": "메일 포트를 입력하세요(예: 587)",
+      "secure": "메일 보안 여부를 입력하세요(예: true)",
+      "auth": {
+        "user": "메일 사용자 이름을 입력하세요(예: nihil_ncunia@naver.com)",
+        "pass": "메일 비밀번호를 입력하세요(예: 네이버 앱 비밀번호)"
+      }
+    }
+  },
+  "api": {
+    "url": "API 엔드포인트 경로를 입력하세요 (예: /api)",
+    "version": "API 버전을 입력하세요 (예: v0.0.0)"
+  },
+  "supabase": {
+    "public": {
+      "url": "Supabase 프로젝트 URL을 입력하세요",
+      "public_key": "Supabase public key를 입력하세요"
+    },
+    "secret": {
+      "db_password": "Supabase DB 비밀번호를 입력하세요",
+      "secret_key": "Supabase secret key를 입력하세요"
+    }
+  }
+}

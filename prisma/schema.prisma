@@ -1,0 +1,224 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/_prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// 사용자 권한
+enum UserRole {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+// 게시물 상태
+enum PostStatus {
+  DRAFT // 임시 저장
+  PUBLISHED // 공개
+  ARCHIVED // 삭제
+}
+
+// 댓글 상태
+enum CommentStatus {
+  PENDING // 승인 대기
+  APPROVED // 승인됨
+  REJECTED // 거부됨
+}
+
+// 댓글 작성자 타입
+enum CommentAuthorType {
+  GUEST // 게스트
+  ADMIN // 관리자 (마스터)
+}
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  username      String   @unique
+  password_hash String
+  image         String?
+  bio           String?
+  role          UserRole @default(ADMIN)
+
+  // 블로그 관리자용 설정
+  github_url    String?
+  instagram_url String?
+  discord_url   String?
+  website_url   String?
+
+  // 마지막 로그인 추적
+  last_login_at DateTime?
+
+  // 계정 상태
+  is_active Boolean @default(true)
+
+  // 관계
+  comments Comment[]
+  posts    Post[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([email, username])
+  @@map("users")
+}
+
+model Category {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  // 관계
+  posts Post[]
+
+  @@index([name])
+  @@map("categories")
+}
+
+model Tag {
+  id         String   @id @default(uuid())
+  name       String   @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // 관계
+  posts PostTags[]
+
+  @@index([name])
+  @@map("tags")
+}
+
+model Series {
+  id          String  @id @default(uuid())
+  title       String
+  description String?
+  slug        String  @unique
+  cover_image String?
+
+  // 소프트 삭제
+  deleted_at DateTime?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // 관계
+  posts Post[]
+
+  @@index([title, slug])
+  @@index([deleted_at])
+  @@map("series")
+}
+
+model Post {
+  id      String     @id @default(uuid())
+  title   String
+  content String // 마크다운 콘텐츠
+  excerpt String? // 요약 (SEO용)
+  slug    String     @unique // URL 슬러그
+  status  PostStatus @default(DRAFT)
+
+  // SEO 및 메타데이터
+  meta_title       String?
+  meta_description String?
+  keywords         String?
+
+  // 게시 정보
+  published_at   DateTime?
+  featured_image String?
+
+  // 통계
+  view_count Int @default(0)
+  like_count Int @default(0)
+
+  // 소프트 삭제
+  deleted_at DateTime?
+
+  // 관계
+  author_id   String
+  author      User       @relation(fields: [author_id], references: [id], onDelete: Cascade)
+  category_id String?
+  category    Category?  @relation(fields: [category_id], references: [id], onDelete: SetNull)
+  series_id   String?
+  series      Series?    @relation(fields: [series_id], references: [id], onDelete: SetNull)
+  tags        PostTags[]
+  comments    Comment[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([title, slug])
+  @@index([status, published_at])
+  @@index([category_id])
+  @@index([author_id])
+  @@index([series_id])
+  @@index([deleted_at])
+  @@map("posts")
+}
+
+// Post와 Tag 간의 다대다 관계를 위한 중간 테이블
+model PostTags {
+  id         String   @id @default(uuid())
+  post_id    String
+  tag_id     String
+  created_at DateTime @default(now())
+
+  // 관계
+  post Post @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tag_id], references: [id], onDelete: Cascade)
+
+  @@unique([post_id, tag_id])
+  @@index([post_id])
+  @@index([tag_id])
+  @@map("post_tags")
+}
+
+model Comment {
+  id      String @id @default(uuid())
+  content String // 댓글 내용
+
+  // 작성자 정보
+  author_type    CommentAuthorType @default(GUEST)
+  author_name    String? // 게스트용 이름
+  author_email   String? // 게스트용 이메일
+  author_website String? // 게스트용 웹사이트
+
+  // 관리자 댓글인 경우 User와 연결
+  user_id String?
+  user    User?   @relation(fields: [user_id], references: [id], onDelete: SetNull)
+
+  // 댓글 계층 구조 (답글 기능)
+  parent_id String? // 부모 댓글 ID
+  parent    Comment?  @relation("CommentReplies", fields: [parent_id], references: [id], onDelete: Cascade)
+  replies   Comment[] @relation("CommentReplies")
+
+  // 포스트 연결
+  post_id String
+  post    Post   @relation(fields: [post_id], references: [id], onDelete: Cascade)
+
+  // 상태 관리
+  status     CommentStatus @default(PENDING) // 댓글 상태
+  deleted_at DateTime? // 소프트 삭제
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([post_id])
+  @@index([parent_id])
+  @@index([author_type])
+  @@index([status])
+  @@index([deleted_at])
+  @@map("comments")
+}

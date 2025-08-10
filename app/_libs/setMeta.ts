@@ -8,9 +8,7 @@ export const setMeta = (meta: SiteMetadata): Metadata => {
   const siteKeywords = meta.keywords
     ? `${siteConfig.keywords}, ${meta.keywords}`
     : siteConfig.keywords;
-  const url = process.env.NODE_ENV === 'development'
-    ? siteConfig.url.development
-    : siteConfig.url.production;
+  const url = siteConfig.url;
   const siteUrl = `${url}${meta.url}`;
   const siteImageLink = meta.imageLink
     ? `${url}${meta.imageLink}`

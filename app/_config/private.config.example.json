@@ -1,0 +1,23 @@
+{
+  "nodemailer": {
+    "provider": {
+      "name": "smtp.naver.com",
+      "port": 587,
+      "secure": "true",
+      "auth": {
+        "user": "your-email@naver.com",
+        "pass": "your-app-password"
+      }
+    }
+  },
+  "supabase": {
+    "public": {
+      "url": "https://your-project.supabase.co",
+      "public_key": "your-anon-key"
+    },
+    "secret": {
+      "db_password": "your-db-password",
+      "secret_key": "your-service-role-key"
+    }
+  }
+}

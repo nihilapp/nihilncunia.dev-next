@@ -1,49 +1,24 @@
-// Supabase SSR 클라이언트 생성 및 쿠키 처리를 위한 함수들 import
 import {
-  createBrowserClient,
   createServerClient,
   parseCookieHeader,
   serializeCookieHeader
 } from '@supabase/ssr';
 
-// Supabase 데이터베이스 타입 정의 import
 import type { Database } from '@/_entities/common/supabase.types';
 
-// 환경 변수 검증
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLIC_KEY;
-const supabaseServiceKey = process.env.NEXT_SUPABASE_SECRET_KEY;
+// 앱 설정 import
+import { app } from '@/_libs/tools/config.loader';
+
+// 설정에서 Supabase 정보 가져오기
+const supabaseUrl = app.server.supabase.public.url;
+const supabaseServiceKey = app.server.supabase.secret.secret_key;
 
 if (!supabaseUrl) {
-  throw new Error('NEXT_PUBLIC_SUPABASE_URL 환경 변수가 설정되지 않았습니다.');
-}
-
-if (!supabaseAnonKey) {
-  throw new Error('NEXT_PUBLIC_SUPABASE_PUBLIC_KEY 환경 변수가 설정되지 않았습니다.');
+  throw new Error('Supabase URL이 설정되지 않았습니다. private.config.json을 확인하세요.');
 }
 
 if (!supabaseServiceKey) {
-  throw new Error('NEXT_SUPABASE_SECRET_KEY 환경 변수가 설정되지 않았습니다.');
-}
-
-/**
- * 브라우저에서 사용할 Supabase 클라이언트를 생성합니다.
- * 클라이언트 사이드에서 사용하며, 자동으로 쿠키를 관리합니다.
- * @returns Supabase 브라우저 클라이언트
- */
-export function supaClient() {
-  return createBrowserClient<Database>(
-    supabaseUrl,
-    supabaseAnonKey,
-    {
-      auth: {
-        detectSessionInUrl: false,
-        flowType: 'pkce',
-        autoRefreshToken: true,
-        persistSession: true,
-      },
-    }
-  );
+  throw new Error('Supabase Service Key가 설정되지 않았습니다. private.config.json을 확인하세요.');
 }
 
 /**
@@ -188,7 +163,6 @@ export function supaMiddleClient(request: Request) {
 }
 
 // 타입 정의
-export type BrowserClientType = ReturnType<typeof supaClient>;
 export type ServerClientType = ReturnType<typeof supaServerClient>;
 export type ServerClientClientType = ServerClientType['client'];
 export type MiddlewareClientType = ReturnType<typeof supaMiddleClient>;
