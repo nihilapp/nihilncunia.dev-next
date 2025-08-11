@@ -12,5 +12,6 @@ export type {
   SiteConfig,
   SiteMetadata,
   QueryOptionType,
-  MutationOptionsType
+  MutationOptionType,
+  PrismaReturn
 } from './common.types';

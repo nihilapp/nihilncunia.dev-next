@@ -11,9 +11,16 @@ export interface ErrorPayload {
   message: string;
 }
 
+interface PrismaResponse<T> {
+  data: T;
+  message: string;
+}
+
+export type PrismaReturn<T> = Promise<PrismaResponse<T>>;
+
 export type QueryOptionType<T> = UseQueryOptions<SuccessPayload<T>, AxiosError<ErrorPayload>, T>;
 
-export type MutationOptionsType<TData, TVariables> = Omit<UseMutationOptions<TData, AxiosError<ErrorPayload>, TVariables>, 'mutationFn'>;
+export type MutationOptionType<TData, TVariables> = Omit<UseMutationOptions<TData, AxiosError<ErrorPayload>, TVariables>, 'mutationFn'>;
 
 type OpenGraphType = 'article' | 'book' | 'music.song' | 'music.album' | 'music.playlist' | 'music.radio_station' | 'profile' | 'website' | 'video.tv_show' | 'video.other' | 'video.movie' | 'video.episode';
 

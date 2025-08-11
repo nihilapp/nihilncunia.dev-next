@@ -1,7 +1,3 @@
----
-alwaysApply: true
----
-
 # Tools 헬퍼 가이드
 
 ---
@@ -20,7 +16,9 @@ app/_libs/tools/
 ├── common.tools.ts   # 공통 유틸리티
 ├── cookie.tools.ts   # 쿠키 처리
 ├── date.tools.ts     # 날짜/시간 처리
-└── logger.tools.ts   # 로깅
+├── jwt.tools.ts      # JWT 토큰 처리
+├── logger.tools.ts   # 로깅
+└── prisma.tools.ts   # Prisma 데이터베이스 처리
 ```
 
 ## 각 헬퍼 설명
@@ -139,6 +137,31 @@ app/_libs/tools/
 - `DateHelper.add()` - 날짜 더하기
 - `DateHelper.toRelative()` - 상대적 시간
 
+### JwtHelper (`@/tools/jwt.tools`)
+
+**위치**: `app/_libs/tools/jwt.tools.ts`
+
+**주요 기능**:
+
+- JWT 토큰 생성 및 검증
+- 액세스 토큰, 리프레시 토큰 관리
+- 토큰 만료 시간 분석
+- 사용자 정보 추출 및 검증
+
+**사용 목적**:
+
+- 사용자 인증 및 권한 관리
+- 토큰 기반 세션 관리
+- 보안 토큰 검증
+
+**주요 메서드**:
+
+- `JwtHelper.genTokens(payload)` - 액세스/리프레시 토큰 생성
+- `JwtHelper.verifyWithUser(token, type)` - 사용자 정보와 함께 토큰 검증
+- `JwtHelper.verify(token, type)` - 기본 JWT 토큰 검증
+- `JwtHelper.refreshTokens(accessToken, refreshToken)` - 토큰 새로고침
+- `JwtHelper.extractUserInfo(token, type)` - 토큰에서 사용자 정보 추출
+
 ### Logger (`@/tools/logger.tools`)
 
 **위치**: `app/_libs/tools/logger.tools.ts`
@@ -162,6 +185,30 @@ app/_libs/tools/
 - `Logger.error()` - 에러 로그
 - `Logger.userAction()` - 사용자 행동 로그
 
+### PrismaHelper (`@/tools/prisma.tools`)
+
+**위치**: `app/_libs/tools/prisma.tools.ts`
+
+**주요 기능**:
+
+- Prisma 클라이언트 관리
+- 데이터베이스 연결 및 쿼리 실행
+- 사용자 데이터 CRUD 작업
+- 트랜잭션 처리
+
+**사용 목적**:
+
+- 데이터베이스 작업 추상화
+- 사용자 데이터 관리
+- 데이터베이스 성능 최적화
+
+**주요 메서드**:
+
+- `PrismaHelper.user.getUser(id)` - 사용자 조회
+- `PrismaHelper.user.updateLastLogin(id)` - 마지막 로그인 시간 업데이트
+- `PrismaHelper.user.createUser(data)` - 사용자 생성
+- `PrismaHelper.user.updateUser(id, data)` - 사용자 정보 수정
+
 ## Import 방법
 
 각 헬퍼는 개별적으로 import하여 사용합니다:
@@ -172,7 +219,9 @@ import { BcryptHelper } from "@/tools/bcrypt.tools";
 import { CommonHelper } from "@/tools/common.tools";
 import { CookieHelper } from "@/tools/cookie.tools";
 import { DateHelper } from "@/tools/date.tools";
+import { JwtHelper } from "@/tools/jwt.tools";
 import { Logger } from "@/tools/logger.tools";
+import { PrismaHelper } from "@/tools/prisma.tools";
 ```
 
 ## 사용 예시
@@ -193,8 +242,21 @@ await CookieHelper.set("session", token, "7d");
 // 날짜 포맷팅
 const formattedDate = DateHelper.format(new Date(), "yyyy년 MM월 dd일");
 
+// JWT 토큰 생성
+const tokens = await JwtHelper.genTokens({
+  id: userId,
+  email: "user@example.com",
+  role: "user",
+});
+
+// 토큰 검증
+const validation = await JwtHelper.verifyWithUser(token, "access");
+
 // 로그 기록
 Logger.apiRequest("GET", "/api/users", { userId });
+
+// 사용자 데이터 조회
+const user = await PrismaHelper.user.getUser(userId);
 ```
 
 ---

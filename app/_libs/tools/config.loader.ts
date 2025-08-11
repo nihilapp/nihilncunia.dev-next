@@ -5,6 +5,12 @@ export const app = {
   public: publicConfig,
   server: {
     ...publicConfig,
+    jwt: {
+      access_secret: '',
+      refresh_secret: '',
+      access_token_exp: '',
+      refresh_token_exp: '',
+    },
     nodemailer: {
       provider: {
         name: 'smtp.naver.com',

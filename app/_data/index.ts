@@ -1,1 +1,4 @@
-export { messageData } from './message.data';
+export {
+  authMessage,
+  userMessage
+} from './message.data';
