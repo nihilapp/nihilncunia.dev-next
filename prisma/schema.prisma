@@ -17,8 +17,9 @@ datasource db {
 
 // 사용자 권한
 enum UserRole {
-  USER
-  ADMIN
+  VISITOR // 방문자 (게스트북 작성 가능)
+  USER // 구독자 (댓글 작성 가능, 새 글 알림)
+  ADMIN // 관리자 (모든 권한)
 }
 
 // 게시물 상태
@@ -37,8 +38,8 @@ enum CommentStatus {
 
 // 댓글 작성자 타입
 enum CommentAuthorType {
-  GUEST // 게스트
-  ADMIN // 관리자 (마스터)
+  USER // 구독자 (가입된 사용자)
+  ADMIN // 관리자
 }
 
 // 이메일 인증 상태
@@ -49,6 +50,26 @@ enum VerificationStatus {
   FAILED // 실패
 }
 
+// 게스트북 상태
+enum GuestBookStatus {
+  PENDING // 승인 대기
+  APPROVED // 승인됨
+  REJECTED // 거부됨
+}
+
+// 활동 유형
+enum ActivityType {
+  COMMENT // 댓글 작성
+  LOGIN // 로그인
+  PROFILE_UPDATE // 프로필 수정
+  GUESTBOOK_WRITE // 게스트북 작성
+  POST_VIEW // 포스트 조회
+  EMAIL_NOTIFICATION_READ // 이메일 알림 읽음
+  GUESTBOOK_REPLY // 게스트북 답글
+  PASSWORD_CHANGE // 비밀번호 변경
+  ACCOUNT_DEACTIVATE // 계정 비활성화
+}
+
 model User {
   id            String   @id @default(uuid())
   email         String   @unique
@@ -56,7 +77,7 @@ model User {
   password_hash String
   image         String?
   bio           String?
-  role          UserRole @default(ADMIN)
+  role          UserRole @default(USER) // 기본값을 USER로 변경
 
   refresh_token String?
 
@@ -72,14 +93,27 @@ model User {
   // 계정 상태
   is_active Boolean @default(true)
 
+  // 구독자 정보
+  subscription_date DateTime  @default(now()) // 구독 시작일
+  comment_count     Int       @default(0) // 댓글 작성 수
+  last_comment_at   DateTime? // 마지막 댓글 작성일
+
+  // 새 글 알림 설정
+  email_notifications Boolean @default(true) // 이메일 알림 수신 여부
+
   // 관계
-  comments Comment[]
-  posts    Post[]
+  comments         Comment[]
+  posts            Post[]
+  activities       GuestActivity[] // 구독자 활동 이력
+  guestBooks       GuestBook[] // 게스트북 작성 (USER/VISITOR)
+  guestBookReplies GuestBookReply[] // 게스트북 답글 (ADMIN)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
   @@index([email, username])
+  @@index([subscription_date])
+  @@index([comment_count])
   @@map("users")
 }
 
@@ -198,15 +232,12 @@ model Comment {
   id      String @id @default(uuid())
   content String // 댓글 내용
 
-  // 작성자 정보
-  author_type    CommentAuthorType @default(GUEST)
-  author_name    String? // 게스트용 이름
-  author_email   String? // 게스트용 이메일
-  author_website String? // 게스트용 웹사이트
+  // 작성자 정보 (USER/ADMIN만 댓글 작성 가능)
+  author_type CommentAuthorType
 
-  // 관리자 댓글인 경우 User와 연결
-  user_id String?
-  user    User?   @relation(fields: [user_id], references: [id], onDelete: SetNull)
+  // 구독자 댓글인 경우 User와 연결 (필수)
+  user_id String
+  user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   // 댓글 계층 구조 (답글 기능)
   parent_id String? // 부모 댓글 ID
@@ -243,4 +274,83 @@ model AdminVerifyHistory {
   created_at  DateTime           @default(now())
 
   @@map("admin_verify_histories")
+}
+
+// 구독자 통계 및 활동 이력
+model GuestActivity {
+  id      String @id @default(uuid())
+  user_id String
+  user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  // 활동 유형
+  activity_type ActivityType // enum으로 변경
+
+  // 활동 상세 정보
+  activity_data Json? // 활동별 추가 데이터
+
+  // 활동 시간
+  created_at DateTime @default(now())
+
+  @@index([user_id])
+  @@index([activity_type])
+  @@index([created_at])
+  @@map("guest_activities")
+}
+
+// 게스트북
+model GuestBook {
+  id String @id @default(uuid())
+
+  // 작성자 정보 (비지터)
+  author_name   String // 보일 이름
+  author_email  String // 답글 알림용 이메일
+  password_hash String // 수정용 비밀번호
+
+  // 게스트북 내용
+  content String // 게스트북 내용
+  status  GuestBookStatus @default(PENDING) // 승인 상태
+
+  // 관계 (USER/VISITOR가 작성한 게스트북)
+  user_id String?
+  user    User?   @relation(fields: [user_id], references: [id], onDelete: SetNull)
+
+  // 답글 관계
+  replies GuestBookReply[]
+
+  // 관리용
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([author_email])
+  @@index([status])
+  @@index([user_id])
+  @@map("guest_books")
+}
+
+// 게스트북 답글
+model GuestBookReply {
+  id String @id @default(uuid())
+
+  // 답글 내용
+  content String
+
+  // 답글 작성자 (관리자만 답글 가능)
+  admin_id String
+  admin    User   @relation(fields: [admin_id], references: [id], onDelete: Cascade)
+
+  // 게스트북 연결
+  guest_book_id String
+  guest_book    GuestBook @relation(fields: [guest_book_id], references: [id], onDelete: Cascade)
+
+  // 답글 상태
+  is_public Boolean @default(true) // 공개 여부
+
+  // 관리용
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([guest_book_id])
+  @@index([admin_id])
+  @@index([is_public])
+  @@map("guest_book_replies")
 }
