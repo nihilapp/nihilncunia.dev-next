@@ -4,6 +4,7 @@ import type { AxiosError } from 'axios';
 export interface SuccessPayload<T> {
   status: number;
   data: T;
+  message?: string;
 }
 
 export interface ErrorPayload {

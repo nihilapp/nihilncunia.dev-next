@@ -11,15 +11,23 @@ export const app = {
       access_token_exp: '',
       refresh_token_exp: '',
     },
+    admin: {
+      super_admin_email: '',
+    },
+    mail: {
+      enable_in_development: false,
+    },
     nodemailer: {
       provider: {
         name: 'smtp.naver.com',
         port: 587,
-        secure: true,
+        secure: 'false',
+        requireTLS: 'true',
         auth: {
           user: '',
           pass: '',
         },
+        to: '',
       },
     },
     supabase: {
@@ -39,6 +47,11 @@ export const app = {
 export type PublicConfig = typeof publicConfig;
 export type ServerConfig = typeof app.server;
 export type AppConfig = typeof app;
+
+// 메일 설정 타입
+export interface MailConfig {
+  enable_in_development: boolean;
+}
 
 // 서버에서만 사용할 수 있는 전체 설정 (민감한 정보 포함)
 export async function getServerConfig() {

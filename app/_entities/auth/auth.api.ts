@@ -1,7 +1,8 @@
 import type { UserWithOmitPassword } from '@/_entities/users';
 import { Api } from '@/_libs/tools/axios.tools';
 
-import type { SignUpData, SignInData } from './auth.types';
+import type { AdminSignUpFormData } from './admin-sighup.form-model';
+import type { SignUpData, SignInData, AdminSignUpData } from './auth.types';
 
 /**
  * 사용자 회원가입
@@ -9,7 +10,7 @@ import type { SignUpData, SignInData } from './auth.types';
  * @returns 사용자 회원가입 결과
  */
 export async function signUp(signUpData: SignUpData) {
-  return Api.postQuery<UserWithOmitPassword, SignUpData>('/api/auth/signup', signUpData);
+  return Api.postQuery<UserWithOmitPassword, SignUpData>('/auth/signup', signUpData);
 }
 
 /**
@@ -18,7 +19,7 @@ export async function signUp(signUpData: SignUpData) {
  * @returns 사용자 로그인 결과
  */
 export async function signIn(signInData: SignInData) {
-  return Api.postQuery<UserWithOmitPassword, SignInData>('/api/auth/signin', signInData);
+  return Api.postQuery<UserWithOmitPassword, SignInData>('/auth/signin', signInData);
 }
 
 /**
@@ -26,7 +27,7 @@ export async function signIn(signInData: SignInData) {
  * @returns 현재 사용자 정보
  */
 export async function verifySession() {
-  return Api.getQuery<UserWithOmitPassword>('/api/auth/session');
+  return Api.getQuery<UserWithOmitPassword>('/auth/session');
 }
 
 /**
@@ -34,5 +35,24 @@ export async function verifySession() {
  * @returns 로그아웃 결과
  */
 export async function signOut() {
-  return Api.postQuery<{ message: string }, Record<string, never>>('/api/auth/signout', {});
+  return Api.postQuery<{ message: string }, Record<string, never>>('/auth/signout', {});
+}
+
+/**
+ * 관리자 회원가입 요청
+ * @param data 관리자 회원가입 데이터
+ * @returns 관리자 회원가입 결과
+ */
+export async function requestAdminSignUp(data: AdminSignUpFormData) {
+  return Api.postQuery<{ message: string;
+    data?: boolean; }, AdminSignUpFormData>('/auth/admin/signup', data);
+}
+
+/**
+ * 관리자 회원가입 완료
+ * @param data 관리자 회원가입 데이터
+ * @returns 관리자 회원가입 결과
+ */
+export async function completeAdminSignUp(data: AdminSignUpFormData & { verificationCode: string }) {
+  return Api.postQuery<UserWithOmitPassword, AdminSignUpData & { verificationCode: string }>('/auth/admin/signup', data);
 }

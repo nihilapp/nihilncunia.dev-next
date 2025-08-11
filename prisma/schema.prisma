@@ -41,6 +41,14 @@ enum CommentAuthorType {
   ADMIN // 관리자 (마스터)
 }
 
+// 이메일 인증 상태
+enum VerificationStatus {
+  PENDING // 대기
+  VERIFIED // 인증됨
+  EXPIRED // 만료됨
+  FAILED // 실패
+}
+
 model User {
   id            String   @id @default(uuid())
   email         String   @unique
@@ -222,4 +230,17 @@ model Comment {
   @@index([status])
   @@index([deleted_at])
   @@map("comments")
+}
+
+// 관리자 이메일 인증 이력
+model AdminVerifyHistory {
+  id          String             @id @default(uuid())
+  email       String
+  code_hash   String?
+  expires_at  DateTime
+  verified_at DateTime?
+  status      VerificationStatus @default(PENDING)
+  created_at  DateTime           @default(now())
+
+  @@map("admin_verify_histories")
 }

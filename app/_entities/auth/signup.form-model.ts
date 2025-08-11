@@ -1,22 +1,10 @@
 import { z } from 'zod';
 
-// 개발자 모드 확인
-const isDevMode = process.env.NODE_ENV === 'development';
-
-// 역할 옵션 정의
-const roleOptions = isDevMode
-  ? [
-    'USER',
-    'ADMIN',
-  ]
-  : [ 'USER', ];
-
 export const signUpFormModel = z.object({
   email: z.string().email('이메일 형식이 올바르지 않습니다.'),
   username: z.string()
     .min(2, '필명은 2자 이상이어야 합니다.')
-    .max(10, '필명은 20자 이하이어야 합니다.'),
-  role: z.enum(roleOptions as [ string, ...string[] ]),
+    .max(20, '필명은 20자 이하이어야 합니다.'),
   password: z.string()
     .min(8, '비밀번호는 8자 이상이어야 합니다.')
     .max(20, '비밀번호는 20자 이하이어야 합니다.')
@@ -37,6 +25,3 @@ export const signUpFormModel = z.object({
 });
 
 export type SignUpFormData = z.infer<typeof signUpFormModel>;
-
-// 역할 옵션을 외부에서 사용할 수 있도록 export
-export const getRoleOptions = () => roleOptions;

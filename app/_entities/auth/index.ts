@@ -1,31 +1,29 @@
-export { AuthService } from './auth.service';
 export { authKeys } from './auth.keys';
-export { useAuthStore } from './auth.store';
 
 export type {
   SignUpData,
   SignInData,
-  AuthResult
+  AuthResult,
+  AdminSignUpData
 } from './auth.types';
 
-export type {
-  SignUpFormData
-} from './signup.form-model';
-
-export type {
-  SignInFormData
-} from './signin.form-model';
-
+// Form models
 export {
-  signUpFormModel
-} from './signup.form-model';
+  adminSignUpFormModel,
+  verificationCodeModel
+} from './admin-sighup.form-model';
 
-export {
-  signInFormModel
-} from './signin.form-model';
+export type {
+  AdminSignUpFormData,
+  VerificationCodeData
+} from './admin-sighup.form-model';
 
+// Hooks
 export {
   useSignIn,
-  useSession,
-  useSignOut
+  useSignUp,
+  useSignOut,
+  useRequestAdminSignUp,
+  useCompleteAdminSignUp,
+  useSession
 } from './hooks';

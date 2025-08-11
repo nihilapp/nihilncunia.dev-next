@@ -10,8 +10,11 @@ import { useForm } from 'react-hook-form';
 import { FormInput } from '@/(common)/_components/form';
 import { Button } from '@/(common)/_components/ui/button';
 import { Form } from '@/(common)/_components/ui/form';
-import { signInFormModel, type SignInFormData, useSignIn, useAuthStore } from '@/_entities/auth';
+import { useSignIn } from '@/_entities/auth';
+import { useAuthStore } from '@/_entities/auth/auth.store';
+import { signInFormModel, type SignInFormData } from '@/_entities/auth/signin.form-model';
 import { cn } from '@/_libs';
+import { ToastHelper } from '@/_libs/tools/toast.tools';
 
 interface Props
   extends React.FormHTMLAttributes<HTMLFormElement>,
@@ -36,9 +39,12 @@ export function SignInForm({ className, ...props }: Props) {
     onSuccess: (user) => {
       // 로그인 성공 시 store에 사용자 정보 저장
       login(user);
+      ToastHelper.success('로그인에 성공했습니다.');
       router.push('/');
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      const errorMessage = error.response?.data?.message || '로그인에 실패했습니다.';
+      ToastHelper.error(errorMessage);
       console.error('로그인 실패:', error);
     },
   });

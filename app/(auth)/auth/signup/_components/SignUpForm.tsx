@@ -7,12 +7,13 @@ import { useRouter } from 'next/navigation';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 
-import { FormInput, FormSelect } from '@/(common)/_components/form';
+import { FormInput } from '@/(common)/_components/form';
 import { Button } from '@/(common)/_components/ui/button';
 import { Form } from '@/(common)/_components/ui/form';
 import { useSignUp } from '@/_entities/auth/hooks/useSignUp';
 import { signUpFormModel, type SignUpFormData } from '@/_entities/auth/signup.form-model';
 import { cn } from '@/_libs';
+import { ToastHelper } from '@/_libs/tools/toast.tools';
 
 interface Props
   extends React.FormHTMLAttributes<HTMLFormElement>,
@@ -34,9 +35,12 @@ export function SignUpForm({ className, ...props }: Props) {
   const signUpMutation = useSignUp({
     onSuccess: () => {
       // 회원가입 성공 시 로그인 페이지로 이동
+      ToastHelper.success('회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.');
       router.push('/auth/signin');
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      const errorMessage = error.response?.data?.message || '회원가입에 실패했습니다.';
+      ToastHelper.error(errorMessage);
       console.error('회원가입 실패:', error);
     },
   });
@@ -47,7 +51,6 @@ export function SignUpForm({ className, ...props }: Props) {
     defaultValues: {
       email: '',
       username: '',
-      role: 'USER',
       password: '',
       passwordConfirm: '',
     },
@@ -57,7 +60,6 @@ export function SignUpForm({ className, ...props }: Props) {
     signUpMutation.mutate({
       email: data.email,
       username: data.username,
-      role: data.role as 'USER' | 'ADMIN',
       password: data.password,
     });
   };
@@ -87,15 +89,6 @@ export function SignUpForm({ className, ...props }: Props) {
           name='username'
           label='이름'
           placeholder='이름을 입력해주세요'
-        />
-
-        {/* 역할 */}
-        <FormSelect
-          form={form}
-          name='role'
-          label='역할'
-          placeholder='역할을 선택해주세요'
-          data='사용자|USER-Y,관리자|ADMIN-Y'
         />
 
         {/* 비밀번호 */}

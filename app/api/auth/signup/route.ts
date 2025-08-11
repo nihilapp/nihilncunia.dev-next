@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import type { SignUpData } from '@/_entities/auth';
 import { AuthService } from '@/_entities/auth/auth.service';
 import { errorResponse, successResponse } from '@/_libs/responseHelper';
-import { Logger } from '@/_libs/tools';
+import { Logger } from '@/_libs/tools/logger.tools';
 
 // 사용자 회원가입
 export async function POST(request: NextRequest) {

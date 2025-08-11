@@ -1,13 +1,27 @@
 {
+  "jwt": {
+    "access_secret": "YOUR_ACCESS_SECRET",
+    "refresh_secret": "YOUR_REFRESH_SECRET",
+    "access_token_exp": "1h",
+    "refresh_token_exp": "30d"
+  },
+  "admin": {
+    "super_admin_email": "YOUR_SUPER_ADMIN_EMAIL"
+  },
+  "mail": {
+    "enable_in_development": false
+  },
   "nodemailer": {
     "provider": {
       "name": "smtp.naver.com",
       "port": 587,
-      "secure": "true",
+      "secure": "false",
+      "requireTLS": "true",
       "auth": {
         "user": "your-email@naver.com",
         "pass": "your-app-password"
-      }
+      },
+      "to": "target-email@naver.com"
     }
   },
   "supabase": {

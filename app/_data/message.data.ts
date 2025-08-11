@@ -9,6 +9,18 @@ export const authMessage = {
   signoutSuccess: '로그아웃 성공',
   signoutError: '로그아웃 실패',
 
+  // 관리자 회원가입
+  adminSignupSuccess: '관리자 회원가입 성공',
+  adminSignupError: '관리자 회원가입 실패',
+  adminEmailNotConfigured: '관리자 이메일이 설정되지 않았습니다.',
+  adminVerificationCodeSent: '인증 코드가 발송되었습니다.',
+  adminVerificationCodeError: '인증 코드 생성에 실패했습니다.',
+  adminVerificationSuccess: '인증에 성공했습니다.',
+  adminVerificationError: '인증 코드 검증에 실패했습니다.',
+  adminVerificationNotFound: '인증 요청 기록이 없습니다.',
+  adminVerificationExpired: '인증 코드가 만료되었습니다.',
+  adminVerificationMismatch: '인증 코드가 일치하지 않습니다.',
+
   // 비밀번호 재설정
   forgotPasswordSuccess: '비밀번호 찾기 이메일이 발송되었습니다.',
   forgotPasswordError: '비밀번호 찾기 실패',
@@ -32,6 +44,8 @@ export const authMessage = {
   // 세션 관리
   sessionExpired: '세션이 만료되었습니다. 다시 로그인해주세요.',
   sessionInvalid: '유효하지 않은 세션입니다.',
+  sessionVerificationError: '세션 검증 중 오류가 발생했습니다.',
+  tokenRefreshSuccess: '토큰이 갱신되었습니다.',
 
   // 보안 기능
   unauthorized: '인증이 필요합니다.',

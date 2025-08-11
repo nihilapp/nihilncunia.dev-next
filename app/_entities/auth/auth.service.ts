@@ -1,16 +1,18 @@
-import { userMessage } from '@/_data';
-import type { SignUpData, SignInData, AuthResult } from '@/_entities/auth';
+import { authMessage, userMessage } from '@/_data';
 import type { PrismaReturn } from '@/_entities/common';
 import type { UserWithOmitPassword } from '@/_entities/users';
 import { UserService } from '@/_entities/users/users.service';
 import { BcryptHelper } from '@/_libs/tools/bcrypt.tools';
+import { EmailHelper } from '@/_libs/tools/email.tools';
 import { JwtHelper } from '@/_libs/tools/jwt.tools';
 import { Logger } from '@/_libs/tools/logger.tools';
 import { PrismaHelper } from '@/_libs/tools/prisma.tools';
 
+import type { SignUpData, SignInData, AuthResult, AdminSignUpData } from './auth.types';
+
 export class AuthService {
   /**
-   * 사용자 회원가입
+   * 일반 사용자 회원가입
    * @param signUpData 사용자 생성 정보
    * @returns 사용자
    */
@@ -33,7 +35,7 @@ export class AuthService {
           email: signUpData.email,
           username: signUpData.username,
           password_hash: hashedPassword,
-          role: signUpData.role,
+          role: 'USER', // 일반 회원가입은 항상 USER로 고정
         },
         omit: {
           password_hash: true,
@@ -59,6 +61,126 @@ export class AuthService {
   }
 
   /**
+   * 관리자 회원가입
+   * @param signUpData 관리자 생성 정보
+   * @returns 사용자
+   */
+  static async signUpAdmin(signUpData: AdminSignUpData): PrismaReturn<UserWithOmitPassword | null> {
+    try {
+      const findUser = await UserService.getUserByEmail(signUpData.email);
+
+      if (findUser.data) {
+        return {
+          data: null,
+          message: userMessage.emailAlreadyExists,
+        };
+      }
+
+      const hashedPassword = await BcryptHelper
+        .dataToHash(signUpData.password);
+
+      const user = await PrismaHelper.client.user.create({
+        data: {
+          email: signUpData.email,
+          username: signUpData.username,
+          password_hash: hashedPassword,
+          role: 'ADMIN',
+        },
+        omit: {
+          password_hash: true,
+          refresh_token: true,
+        },
+      });
+
+      Logger.userAction('ADMIN_SIGNUP', user.id, { email: user.email, });
+
+      return {
+        data: user,
+        message: userMessage.createSuccess,
+      };
+    }
+    catch (error) {
+      Logger.error('ADMIN_SIGNUP_ERROR', error);
+
+      return {
+        data: null,
+        message: userMessage.createError,
+      };
+    }
+  }
+
+  /**
+   * 관리자 인증 코드 생성 및 발송
+   * @returns 성공 여부
+   */
+  static async createAdminVerification(): PrismaReturn<boolean> {
+    try {
+      const code = Math.random().toString().substring(2, 8);
+
+      // 개발 환경에서 로깅
+      if (process.env.NODE_ENV === 'development') {
+        Logger.info('ADMIN_VERIFICATION', '인증 코드 생성 시작', {
+          code,
+        });
+      }
+
+      // 설정 파일의 to 필드로 이메일 발송
+      await EmailHelper.sendVerificationCode(code);
+
+      // 개발 환경에서 로깅
+      if (process.env.NODE_ENV === 'development') {
+        Logger.info('ADMIN_VERIFICATION', '인증 코드 이메일 발송 완료');
+      }
+
+      return {
+        data: true,
+        message: authMessage.adminVerificationCodeSent,
+      };
+    }
+    catch (error) {
+      Logger.error('ADMIN_VERIFICATION', '인증 코드 생성 실패', error);
+      return {
+        data: false,
+        message: authMessage.adminVerificationCodeError,
+      };
+    }
+  }
+
+  /**
+   * 관리자 인증 코드 검증
+   * @param code - 사용자가 입력한 코드
+   * @returns 성공 여부
+   */
+  static async verifyAdminCode(code: string): PrismaReturn<boolean> {
+    try {
+      // 개발 환경에서는 콘솔에 인증 코드 출력
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔐 [개발환경] 인증 코드 검증 요청:', code);
+      }
+
+      // 현재는 단순히 코드가 6자리 숫자인지만 확인
+      if (!/^\d{6}$/.test(code)) {
+        return {
+          data: false,
+          message: '인증 코드는 6자리 숫자여야 합니다.',
+        };
+      }
+
+      return {
+        data: true,
+        message: authMessage.adminVerificationSuccess,
+      };
+    }
+    catch (error) {
+      Logger.error('ADMIN_VERIFICATION_VERIFY_ERROR', error);
+      return {
+        data: false,
+        message: authMessage.adminVerificationError,
+      };
+    }
+  }
+
+  /**
    * 사용자 로그인
    * @param signInData 사용자 로그인 정보
    * @returns 사용자 및 토큰
@@ -70,17 +192,17 @@ export class AuthService {
       if (!findUser.data) {
         return {
           data: null,
-          message: userMessage.userNotFound,
+          message: authMessage.invalidCredentials,
         };
       }
 
       const isPasswordValid = await BcryptHelper
-        .dataCompare(signInData.password, findUser.data.password_hash);
+        .dataCompare(findUser.data.password_hash, signInData.password);
 
       if (!isPasswordValid) {
         return {
           data: null,
-          message: userMessage.currentPasswordIncorrect,
+          message: authMessage.invalidCredentials,
         };
       }
 
@@ -146,7 +268,7 @@ export class AuthService {
         if (!user) {
           return {
             data: null,
-            message: '사용자를 찾을 수 없습니다.',
+            message: userMessage.userNotFound,
           };
         }
 
@@ -162,7 +284,7 @@ export class AuthService {
       if (!refreshValidation.isValid || !refreshValidation.user) {
         return {
           data: null,
-          message: '세션이 만료되었습니다.',
+          message: authMessage.sessionExpired,
         };
       }
 
@@ -191,7 +313,7 @@ export class AuthService {
       if (!user) {
         return {
           data: null,
-          message: '사용자를 찾을 수 없습니다.',
+          message: userMessage.userNotFound,
         };
       }
 
@@ -203,7 +325,7 @@ export class AuthService {
           accessToken: newAccessToken,
           refreshToken: newRefreshToken,
         },
-        message: '토큰이 갱신되었습니다.',
+        message: authMessage.tokenRefreshSuccess,
       };
     }
     catch (error) {
@@ -211,7 +333,7 @@ export class AuthService {
 
       return {
         data: null,
-        message: '세션 검증 중 오류가 발생했습니다.',
+        message: authMessage.sessionVerificationError,
       };
     }
   }
@@ -233,7 +355,7 @@ export class AuthService {
 
       return {
         data: true,
-        message: '로그아웃되었습니다.',
+        message: authMessage.signoutSuccess,
       };
     }
     catch (error) {
@@ -241,7 +363,7 @@ export class AuthService {
 
       return {
         data: false,
-        message: '로그아웃 중 오류가 발생했습니다.',
+        message: authMessage.signoutError,
       };
     }
   }

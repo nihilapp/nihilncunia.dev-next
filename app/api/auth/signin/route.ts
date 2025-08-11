@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import type { SignInData } from '@/_entities/auth';
 import { AuthService } from '@/_entities/auth/auth.service';
 import { errorResponse, successResponse } from '@/_libs/responseHelper';
-import { Logger } from '@/_libs/tools';
+import { Logger } from '@/_libs/tools/logger.tools';
 import { getServerConfig } from '@/_libs/tools/config.loader';
 import { CookieHelper } from '@/_libs/tools/cookie.tools';
 

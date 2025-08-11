@@ -1,11 +1,16 @@
 import type { UserWithOmitPassword } from '@/_entities/users';
-import type { UserRole } from '@/_prisma';
 
 export interface SignUpData {
   email: string;
   username: string;
-  role: UserRole;
   password: string;
+}
+
+export interface AdminSignUpData {
+  email: string;
+  username: string;
+  password: string;
+  role: 'ADMIN';
 }
 
 export interface SignInData {

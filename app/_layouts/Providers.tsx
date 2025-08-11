@@ -4,6 +4,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import React from 'react';
 
+import { Toaster } from '@/(common)/_components/ui/sonner';
+
 interface Props {
   children: React.ReactNode;
 }
@@ -28,6 +30,7 @@ export function Providers({ children, }: Props) {
       <QueryClientProvider client={queryClient}>
         {children}
         <ReactQueryDevtools />
+        <Toaster />
       </QueryClientProvider>
     </>
   );

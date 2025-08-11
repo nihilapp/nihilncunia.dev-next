@@ -1,11 +1,12 @@
 ---
-description:
-globs:
 alwaysApply: true
 ---
+
 # 공통 개발 규칙
 
 ---
+
+## 기본 개발 규칙
 
 - 모든 응답과 설명은 한국어로 작성합니다.
 
@@ -19,7 +20,7 @@ alwaysApply: true
 
 - 사용자가 여러개의 태스크를 요청했을 때 사용자에게 다음으로 진행할 것을 확인하지 마세요. 그냥 진행하세요.
 
-## 파일 이름 및 폴더 구조 규칙
+## 파일 이름 규칙
 
 - 파일 이름은 일반적으로 kebab-case(예: post-list.tsx, user-profile.ts)로 작성한다.
 
@@ -27,21 +28,34 @@ alwaysApply: true
 
 - 폴더 이름은 kebab-case를 원칙으로 한다.
 
-- 프로젝트에 필요한 작은 데이터들은 /app/_data 폴더에 저장합니다. index.ts 파일을 두고 내부 데이터들을 명시적으로 export 합니다.
+## 폴더 구조 규칙
 
-- /app/_entities 폴더에는 프로젝트의 각 자원별로 index.ts / <자원>.api.ts / <자원>.store.ts / <자원>.keys.ts / <자원>.types.ts / hooks 폴더 를 두고 파일들을 관리합니다.
+### 기본 폴더 구조
 
-- 라우트 폴더에는 _components, _layouts 가 위치하고, 이 폴더에는 반드시 index.ts 파일을 두고, 내부 컴포넌트를 명시적으로 export 한다.
+- 프로젝트에 필요한 작은 데이터들은 `/app/_data` 폴더에 저장합니다. index.ts 파일을 두고 내부 데이터들을 명시적으로 export 합니다.
 
-- export 시에는 'export { 컴포넌트 } from ...' 형식을 사용한다. (export * from ... 금지)
+- `/app/_entities` 폴더에는 프로젝트의 각 자원별로 다음 파일들을 관리합니다:
+  - `index.ts`: 엔티티의 모든 export를 관리
+  - `<자원>.api.ts`: API 호출 함수들
+  - `<자원>.service.ts`: 비즈니스 로직 및 데이터베이스 작업
+  - `<자원>.store.ts`: 상태 관리
+  - `<자원>.keys.ts`: React Query 쿼리 키 관리
+  - `<자원>.types.ts`: 타입 정의
+  - `<자원>.form-model.ts`: 폼 검증 스키마
+  - `hooks/` 폴더: React Query 훅들
 
-- 라우트 그룹은 app/(common), app/(auth), app/(admin) 등으로 구분한다.
+### 라우트 그룹 구조
+
+- 라우트 그룹은 `app/(common)`, `app/(auth)`, `app/(admin)` 등으로 구분한다.
+
+- 라우트 폴더에는 `_components`, `_layouts` 가 위치하고, 이 폴더에는 반드시 index.ts 파일을 두고, 내부 컴포넌트를 명시적으로 export 한다.
+
+### Export 규칙
+
+- export 시에는 `export { 컴포넌트 } from ...` 형식을 사용한다. (`export * from ...` 금지)
 
 - 각 기능별로 hooks, types, api, store, keys 등 하위 폴더/파일을 명확히 분리한다.
 
 ---
 
 > 이 규칙은 파일/폴더 네이밍 및 구조의 일관성을 통해 유지보수성과 협업 효율을 높이기 위한 가이드입니다.
-
-
-

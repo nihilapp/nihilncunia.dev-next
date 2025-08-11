@@ -1,0 +1,165 @@
+---
+alwaysApply: true
+---
+
+# 폴더 구조 규칙
+
+---
+
+## 기본 폴더 구조
+
+- 폴더 구조는 app/(common), app/(auth), app/(admin) 등 라우트 그룹을 사용한다.
+- 공통 컴포넌트, 도메인별 \_entities, \_libs, \_icons 등 폴더 구조를 따른다.
+
+## 폴더별 역할 설명
+
+### 라우트 그룹
+
+- `app/(common)`: 공통적으로 사용되는 페이지들 (메인, 블로그, 포트폴리오 등)
+- `app/(auth)`: 인증 관련 페이지들 (로그인, 회원가입, 비밀번호 재설정 등)
+- `app/(admin)`: 관리자 전용 페이지들 (대시보드, 사용자 관리, 콘텐츠 관리 등)
+
+### 공통 폴더 (common 라우트 그룹)
+
+- `app/(common)/_components`: 공통 컴포넌트들이 위치하는 폴더
+  - `app/(common)/_components/ui`: shadcn/ui 컴포넌트들이 위치
+  - `app/(common)/_components/form`: 폼 관련 공통 컴포넌트들
+- `app/(common)/_layouts`: 레이아웃 컴포넌트들이 위치하는 폴더
+- `app/_entities`: 도메인별 엔티티 관련 파일들이 위치하는 폴더
+- `app/_libs`: 유틸리티 라이브러리들이 위치하는 폴더
+- `app/_icons`: 커스텀 아이콘들이 위치하는 폴더
+- `app/_data`: 정적 데이터들이 위치하는 폴더
+
+### 라우트별 폴더
+
+- `app/[route]/_components`: 해당 라우트에서만 사용되는 컴포넌트들
+- `app/[route]/_layouts`: 해당 라우트에서만 사용되는 레이아웃들
+
+## 엔티티별 폴더 구조
+
+- 각 엔티티는 다음과 같은 구조를 가진다:
+
+  ```
+  _entities/[entity명]/
+  ├── index.ts                    # 엔티티의 모든 export를 관리
+  ├── [entity명].api.ts           # API 호출 함수들 (React Query와 연동)
+  ├── [entity명].service.ts       # 비즈니스 로직 및 데이터베이스 작업
+  ├── [entity명].store.ts         # 상태 관리 (Zustand 등)
+  ├── [entity명].keys.ts          # React Query 쿼리 키 관리
+  ├── [entity명].types.ts         # 타입 정의
+  ├── [entity명].form-model.ts    # 폼 검증 스키마 (Zod)
+  └── hooks/
+      ├── index.ts                # 훅들의 export 관리
+      └── use[Action][Entity].ts  # React Query 훅들
+  ```
+
+### 파일별 역할 설명
+
+#### `index.ts`
+
+- 엔티티의 모든 export를 중앙에서 관리
+- 다른 파일에서 import할 때 일관된 경로 제공
+
+#### `[entity명].api.ts`
+
+- React Query와 연동되는 API 호출 함수들
+- GET, POST, PUT, DELETE 등의 HTTP 메서드 함수 정의
+- API 응답 타입과 에러 처리 포함
+
+#### `[entity명].service.ts`
+
+- 비즈니스 로직 처리
+- 데이터베이스 작업 (Prisma 등)
+- API 라우트에서 호출되는 서비스 클래스/함수들
+
+#### `[entity명].store.ts`
+
+- 클라이언트 상태 관리
+- Zustand, Redux 등 상태 관리 라이브러리 사용
+- 전역 상태나 복잡한 상태 로직 관리
+
+#### `[entity명].keys.ts`
+
+- React Query 쿼리 키 정의
+- 캐시 무효화를 위한 키 구조 관리
+- 리스트, 상세, 필터별 키 분류
+
+#### `[entity명].types.ts`
+
+- 엔티티 관련 모든 타입 정의
+- API 요청/응답 타입
+- 컴포넌트 Props 타입
+- 상태 관리 타입
+
+#### `[entity명].form-model.ts`
+
+- Zod 스키마 정의
+- 폼 검증 규칙
+- 타입 안전성을 위한 스키마-타입 연동
+
+#### `hooks/` 폴더
+
+- React Query 훅들
+- 데이터 페칭, 뮤테이션 훅
+- 커스텀 비즈니스 로직 훅
+
+### API 라우트와의 연계 흐름
+
+```
+1. 클라이언트 컴포넌트
+   ↓ use[Action][Entity] 훅 호출
+2. React Query 훅
+   ↓ [entity명].api.ts 함수 호출
+3. API 함수
+   ↓ fetch/axios로 API 라우트 호출
+4. API 라우트 (/app/api/[entity]/route.ts)
+   ↓ [entity명].service.ts 함수 호출
+5. 서비스 함수
+   ↓ 데이터베이스 작업 (Prisma)
+6. 데이터베이스
+   ↓ 응답 반환
+7. 서비스 → API 라우트 → API 함수 → 훅 → 컴포넌트
+```
+
+### 데이터 흐름 예시
+
+```typescript
+// 1. 컴포넌트에서 훅 사용
+const { users, loading } = useGetUsers();
+
+// 2. 훅에서 API 함수 호출
+export function useGetUsers() {
+  return useQuery({
+    queryKey: usersKeys.all(),
+    queryFn: getUsers, // users.api.ts의 함수
+  });
+}
+
+// 3. API 함수에서 API 라우트 호출
+export async function getUsers() {
+  return Api.getQuery<User[]>("/users");
+}
+
+// 4. API 라우트에서 서비스 호출
+export async function GET() {
+  const users = await UserService.getAll();
+  return successResponse({ data: users, status: 200 });
+}
+
+// 5. 서비스에서 데이터베이스 작업
+export class UserService {
+  static async getAll() {
+    return PrismaHelper.client.user.findMany();
+  }
+}
+```
+
+## Export 규칙
+
+- `export { 컴포넌트 } from ...` 형식 사용
+- `export * from ...` 금지
+- 명시적으로 export할 항목들을 명확히 표시
+
+---
+
+> 이 규칙은 프로젝트 폴더 구조의 일관성과 유지보수성을 높이기 위한 가이드입니다.

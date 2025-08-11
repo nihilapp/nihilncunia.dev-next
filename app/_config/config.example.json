@@ -29,7 +29,8 @@
     "provider": {
       "name": "메일 제공자 이름을 입력하세요(예: smtp.naver.com)",
       "port": "메일 포트를 입력하세요(예: 587)",
-      "secure": "메일 보안 여부를 입력하세요(예: true)",
+      "secure": "메일 보안 여부를 입력하세요(포트 587 사용시 false, 포트 465 사용시 true)",
+      "requireTLS": "TLS 필요 여부를 입력하세요(포트 587 사용시 true, 포트 465 사용시 false)",
       "auth": {
         "user": "메일 사용자 이름을 입력하세요(예: nihil_ncunia@naver.com)",
         "pass": "메일 비밀번호를 입력하세요(예: 네이버 앱 비밀번호)"
