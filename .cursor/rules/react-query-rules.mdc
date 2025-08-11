@@ -126,14 +126,19 @@ export function useUpdateProfile(options: UseUpdateProfileOptions = {}) {
       const response = await updateProfile(id, data);
       return response.data;
     },
-    onSuccess: (data, variables) => {
-      // 프로필 업데이트 성공 시 관련 쿼리 무효화
+    onSuccess: (data, variables, context) => {
+      // 기본 로직: 프로필 업데이트 성공 시 관련 쿼리 무효화
       queryClient.invalidateQueries({
         queryKey: profilesKeys.all(),
       });
       queryClient.invalidateQueries({
         queryKey: profilesKeys.detail(variables.id),
       });
+
+      // 추가 로직이 있다면 실행
+      if (options.onSuccess) {
+        options.onSuccess(data, variables, context);
+      }
     },
     ...options,
   });
@@ -167,6 +172,29 @@ export const profilesKeys = {
   details: () => [...profilesKeys.all(), "detail"] as const,
   detail: (id: string) => [...profilesKeys.details(), id] as const,
 };
+```
+
+---
+
+## 폼 모델 관리
+
+- 각 엔티티별로 `[entity명].form-model.ts` 파일을 생성한다.
+- zod 스키마와 타입을 함께 정의한다.
+- 이메일 검증 시 `z.email()`을 사용한다 (z.string().email() 금지).
+- 폼 모델은 `@/_entities/[entity명]`에서 import한다.
+
+### 폼 모델 예시
+
+```typescript
+// auth.form-model.ts
+import { z } from "zod";
+
+export const signInFormModel = z.object({
+  email: z.email("올바른 이메일을 입력해주세요"),
+  password: z.string().min(1, "비밀번호를 입력해주세요"),
+});
+
+export type SignInFormData = z.infer<typeof signInFormModel>;
 ```
 
 ---

@@ -1,31 +1,15 @@
 export const authKeys = {
   all: () => [ 'auth', ] as const,
-  signUp: () => [
-    ...authKeys.all(),
-    'signUp',
-  ] as const,
-  signIn: () => [
-    ...authKeys.all(),
-    'signIn',
-  ] as const,
-  signOut: () => [
-    ...authKeys.all(),
-    'signOut',
-  ] as const,
   session: () => [
     ...authKeys.all(),
     'session',
   ] as const,
-  resetPassword: () => [
+  signin: () => [
     ...authKeys.all(),
-    'resetPassword',
+    'signin',
   ] as const,
-  verifyEmail: () => [
+  signup: () => [
     ...authKeys.all(),
-    'verifyEmail',
-  ] as const,
-  otp: () => [
-    ...authKeys.all(),
-    'otp',
+    'signup',
   ] as const,
 };

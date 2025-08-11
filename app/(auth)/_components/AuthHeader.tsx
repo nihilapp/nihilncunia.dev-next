@@ -12,6 +12,8 @@ interface Props
   extends React.HTMLAttributes<HTMLElement>,
   VariantProps<typeof cssVariants> {
   className?: string;
+  title?: string;
+  description?: string;
 }
 
 const cssVariants = cva(
@@ -23,7 +25,7 @@ const cssVariants = cva(
   }
 );
 
-export function AuthHeader({ className, ...props }: Props) {
+export function AuthHeader({ className, title, description, ...props }: Props) {
   return (
     <header
       className={cn(
@@ -40,6 +42,7 @@ export function AuthHeader({ className, ...props }: Props) {
               src='/images/nihil-logo.png'
               alt='nihilncunia logo'
               fill
+              sizes='32px'
               className='object-contain'
               priority
             />
@@ -60,6 +63,15 @@ export function AuthHeader({ className, ...props }: Props) {
           </Button>
         </nav>
       </div>
+
+      {title && (
+        <div className='mt-8 text-center'>
+          <h1 className='text-2xl font-bold text-foreground'>{title}</h1>
+          {description && (
+            <p className='mt-2 text-sm text-muted-foreground'>{description}</p>
+          )}
+        </div>
+      )}
     </header>
   );
 }

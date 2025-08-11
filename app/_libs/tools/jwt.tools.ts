@@ -3,8 +3,6 @@ import { jwtVerify, SignJWT } from 'jose';
 import { getServerConfig } from '@/_libs/tools/config.loader';
 import { PrismaHelper } from '@/_libs/tools/prisma.tools';
 
-const app = await getServerConfig();
-
 interface TokenPayload {
   id: string;
   email: string;
@@ -34,6 +32,22 @@ interface ValidationResult {
   error?: string;
 }
 
+// JWT 설정을 캐시
+let jwtConfig: {
+  access_secret: string;
+  refresh_secret: string;
+  access_token_exp: string;
+  refresh_token_exp: string;
+} | null = null;
+
+async function getJwtConfig() {
+  if (!jwtConfig) {
+    const app = await getServerConfig();
+    jwtConfig = app.server.jwt;
+  }
+  return jwtConfig;
+}
+
 export class JwtHelper {
   /**
    * 토큰 생성 (액세스 토큰, 리프레시 토큰)
@@ -41,12 +55,13 @@ export class JwtHelper {
    * @returns 액세스 토큰, 리프레시 토큰
    */
   static async genTokens(payload: TokenPayload) {
+    const config = await getJwtConfig();
     const {
       access_secret,
       refresh_secret,
       access_token_exp,
       refresh_token_exp,
-    } = app.server.jwt;
+    } = config;
 
     const accessToken = await new SignJWT({ ...payload, })
       .setProtectedHeader({ alg: 'HS256', })
@@ -79,7 +94,13 @@ export class JwtHelper {
       const payload = await this.verify(token, type);
 
       // 2. 사용자가 데이터베이스에 존재하는지 확인
-      const user = await PrismaHelper.user.getUser(payload.id);
+      const user = await PrismaHelper.client.user.findUnique({
+        where: { id: payload.id, },
+        omit: {
+          password_hash: true,
+          refresh_token: true,
+        },
+      });
 
       if (!user) {
         return {
@@ -132,9 +153,10 @@ export class JwtHelper {
     token: string,
     type: 'access' | 'refresh'
   ): Promise<JwtPayload> {
+    const config = await getJwtConfig();
     const secret = type === 'access'
-      ? app.server.jwt.access_secret
-      : app.server.jwt.refresh_secret;
+      ? config.access_secret
+      : config.refresh_secret;
 
     const { payload, } = await jwtVerify(
       token,

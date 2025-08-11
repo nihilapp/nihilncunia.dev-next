@@ -10,6 +10,7 @@ interface Props
   extends React.HTMLAttributes<HTMLDivElement>,
   VariantProps<typeof cssVariants> {
   className?: string;
+  title?: string;
 }
 
 const cssVariants = cva(
@@ -21,7 +22,7 @@ const cssVariants = cva(
   }
 );
 
-export function AuthCard({ className, children, ...props }: Props) {
+export function AuthCard({ className, title, children, ...props }: Props) {
   return (
     <main
       className={cn(
@@ -31,11 +32,13 @@ export function AuthCard({ className, children, ...props }: Props) {
       {...props}
     >
       <Card className='border-0 shadow-lg bg-white'>
-        <CardHeader className='pb-6'>
-          <CardTitle className='text-xl font-semibold text-gray-900 text-center'>
-            회원가입
-          </CardTitle>
-        </CardHeader>
+        {title && (
+          <CardHeader className='pb-6'>
+            <CardTitle className='text-xl font-semibold text-gray-900 text-center'>
+              {title}
+            </CardTitle>
+          </CardHeader>
+        )}
         <CardContent className='space-y-6'>
           {children}
         </CardContent>

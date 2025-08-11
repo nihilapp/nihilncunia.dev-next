@@ -1,21 +1,20 @@
-import React from 'react';
+import { AuthCard, AuthHeader, AuthLayoutProvider } from './_components';
 
-import { AuthCard } from '@/(auth)/_components/AuthCard';
-import { AuthHeader } from '@/(auth)/_components/AuthHeader';
-
-interface Props {
+export default function AuthLayout({
+  children,
+}: {
   children: React.ReactNode;
-}
-
-export default function layout({ children, }: Props) {
+}) {
   return (
     <div className='min-h-screen bg-gray-50 flex flex-col text-black-base'>
       <AuthHeader />
 
       <div className='flex-1 flex items-center justify-center p-6'>
-        <AuthCard>
-          {children}
-        </AuthCard>
+        <AuthLayoutProvider>
+          <AuthCard>
+            {children}
+          </AuthCard>
+        </AuthLayoutProvider>
       </div>
     </div>
   );

@@ -12,7 +12,7 @@ import { siteConfig } from '../../_config';
  * Axios 기반의 API 요청을 위한 헬퍼 클래스
  */
 export class Api {
-  private static baseURL = siteConfig.apiRoute;
+  private static baseURL = siteConfig.baseApiUrl;
 
   private static config: AxiosRequestConfig = {
     withCredentials: true,

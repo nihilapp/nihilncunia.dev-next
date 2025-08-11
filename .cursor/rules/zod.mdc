@@ -1,0 +1,5 @@
+---
+alwaysApply: true
+---
+
+- zod로 이메일을 정의할 때에는 z.email() 을 사용합니다. z.string().email() 은 더 이상 사용되지 않습니다.

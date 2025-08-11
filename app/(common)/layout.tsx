@@ -1,13 +1,15 @@
-import React from 'react';
+import { SessionProvider } from './_components';
 
-interface Props {
+export default function CommonLayout({
+  children,
+}: {
   children: React.ReactNode;
-}
-
-export default function layout({ children, }: Props) {
+}) {
   return (
-    <div>
-      {children}
+    <div className='min-h-screen bg-background'>
+      <SessionProvider>
+        {children}
+      </SessionProvider>
     </div>
   );
 }

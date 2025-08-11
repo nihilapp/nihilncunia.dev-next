@@ -7,11 +7,10 @@ import { useRouter } from 'next/navigation';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 
-import { FormInput, FormSelect } from '@/(common)/_components/form';
+import { FormInput } from '@/(common)/_components/form';
 import { Button } from '@/(common)/_components/ui/button';
 import { Form } from '@/(common)/_components/ui/form';
-import { useSignUp } from '@/_entities/auth/hooks/useSignUp';
-import { signUpFormModel, type SignUpFormData } from '@/_entities/auth/signup.form-model';
+import { signInFormModel, type SignInFormData, useSignIn, useAuthStore } from '@/_entities/auth';
 import { cn } from '@/_libs';
 
 interface Props
@@ -29,35 +28,33 @@ const cssVariants = cva(
   }
 );
 
-export function SignUpForm({ className, ...props }: Props) {
+export function SignInForm({ className, ...props }: Props) {
   const router = useRouter();
-  const signUpMutation = useSignUp({
-    onSuccess: () => {
-      // 회원가입 성공 시 로그인 페이지로 이동
-      router.push('/auth/signin');
+  const { login, } = useAuthStore();
+
+  const signInMutation = useSignIn({
+    onSuccess: (user) => {
+      // 로그인 성공 시 store에 사용자 정보 저장
+      login(user);
+      router.push('/');
     },
     onError: (error) => {
-      console.error('회원가입 실패:', error);
+      console.error('로그인 실패:', error);
     },
   });
 
-  const form = useForm<SignUpFormData>({
+  const form = useForm<SignInFormData>({
     mode: 'all',
-    resolver: zodResolver(signUpFormModel),
+    resolver: zodResolver(signInFormModel),
     defaultValues: {
       email: '',
-      username: '',
-      role: 'USER',
       password: '',
-      passwordConfirm: '',
     },
   });
 
-  const onSubmit = (data: SignUpFormData) => {
-    signUpMutation.mutate({
+  const onSubmit = async (data: SignInFormData) => {
+    signInMutation.mutate({
       email: data.email,
-      username: data.username,
-      role: data.role as 'USER' | 'ADMIN',
       password: data.password,
     });
   };
@@ -81,23 +78,6 @@ export function SignUpForm({ className, ...props }: Props) {
           type='email'
         />
 
-        {/* 이름 */}
-        <FormInput
-          form={form}
-          name='username'
-          label='이름'
-          placeholder='이름을 입력해주세요'
-        />
-
-        {/* 역할 */}
-        <FormSelect
-          form={form}
-          name='role'
-          label='역할'
-          placeholder='역할을 선택해주세요'
-          data='사용자|USER-Y,관리자|ADMIN-Y'
-        />
-
         {/* 비밀번호 */}
         <FormInput
           form={form}
@@ -107,32 +87,23 @@ export function SignUpForm({ className, ...props }: Props) {
           type='password'
         />
 
-        {/* 비밀번호 확인 */}
-        <FormInput
-          form={form}
-          name='passwordConfirm'
-          label='비밀번호 확인'
-          placeholder='비밀번호를 다시 입력해주세요'
-          type='password'
-        />
-
         {/* 제출 버튼 */}
         <Button
           type='submit'
           className='w-full h-12'
-          disabled={signUpMutation.isPending}
+          disabled={signInMutation.isPending}
         >
-          {signUpMutation.isPending
+          {signInMutation.isPending
             ? '처리중...'
-            : '회원가입'}
+            : '로그인'}
         </Button>
 
-        {/* 로그인 링크 */}
+        {/* 회원가입 링크 */}
         <div className='text-center'>
-          <span className='text-sm text-muted-foreground'>이미 계정이 있으신가요? </span>
+          <span className='text-sm text-muted-foreground'>계정이 없으신가요? </span>
           <Button variant='link' size='sm' className='p-0 h-auto font-medium' asChild>
-            <Link href='/auth/signin'>
-              로그인
+            <Link href='/auth/signup'>
+              회원가입
             </Link>
           </Button>
         </div>
