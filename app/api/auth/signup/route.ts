@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server';
 
 import type { SignUpData } from '@/_entities/auth';
-import { AuthService } from '@/_entities/auth/auth.service';
+import { authService } from '@/_entities/auth/auth.service';
 import { errorResponse, successResponse } from '@/_libs/responseHelper';
 import { Logger } from '@/_libs/tools/logger.tools';
 
@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
   try {
     const signUpData: SignUpData = await request.json();
 
-    const signUpResult = await AuthService.signUp(signUpData);
+    const signUpResult = await authService.signUp(signUpData);
 
     if (!signUpResult.data) {
       return errorResponse({

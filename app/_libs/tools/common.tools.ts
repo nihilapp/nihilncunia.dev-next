@@ -297,4 +297,50 @@ export class CommonHelper {
   static clamp(val: number, min: number, max: number): number {
     return Math.min(Math.max(val, min), max);
   }
+
+  /**
+   * 임시 비밀번호 생성 (영대소문자, 숫자, 특수문자 각각 하나씩 포함)
+   * @returns 8자리 임시 비밀번호
+   * @example CommonHelper.generateTemporaryPassword() // 'Kj9#mN2p'
+   */
+  static generateTemporaryPassword(): string {
+    const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+    const numbers = '0123456789';
+    const specialChars = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+
+    // 각 카테고리에서 하나씩 선택
+    const upperChar = uppercase[Math.floor(Math.random() * uppercase.length)];
+    const lowerChar = lowercase[Math.floor(Math.random() * lowercase.length)];
+    const numberChar = numbers[Math.floor(Math.random() * numbers.length)];
+    const specialChar = specialChars[Math.floor(Math.random() * specialChars.length)];
+
+    // 나머지 4자리는 모든 문자에서 랜덤 선택
+    const allChars = uppercase + lowercase + numbers + specialChars;
+    const remainingChars = Array.from({ length: 4, }, () =>
+      allChars[Math.floor(Math.random() * allChars.length)]);
+
+    // 모든 문자를 배열로 만들고 섞기
+    const passwordArray = [
+      upperChar,
+      lowerChar,
+      numberChar,
+      specialChar,
+      ...remainingChars,
+    ];
+
+    // Fisher-Yates 셔플 알고리즘으로 배열 섞기
+    for (let i = passwordArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [
+        passwordArray[i],
+        passwordArray[j],
+      ] = [
+        passwordArray[j],
+        passwordArray[i],
+      ];
+    }
+
+    return passwordArray.join('');
+  }
 }

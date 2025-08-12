@@ -104,6 +104,15 @@ export function SignInForm({ className, ...props }: Props) {
             : '로그인'}
         </Button>
 
+        {/* 비밀번호 재설정 링크 */}
+        <div className='text-center'>
+          <Button variant='link' size='sm' className='p-0 h-auto font-medium' asChild>
+            <Link href='/auth/forgot-password'>
+              비밀번호를 잊으셨나요?
+            </Link>
+          </Button>
+        </div>
+
         {/* 회원가입 링크 */}
         <div className='text-center'>
           <span className='text-sm text-muted-foreground'>계정이 없으신가요? </span>

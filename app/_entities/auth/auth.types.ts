@@ -23,3 +23,14 @@ export interface AuthResult {
   accessToken?: string;
   refreshToken?: string;
 }
+
+export interface ForgotPasswordData {
+  email: string;
+}
+
+export interface ResetPasswordData {
+  email: string;
+  tempPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}

@@ -1,13 +1,11 @@
-import type { NextRequest } from 'next/server';
-
-import { AuthService } from '@/_entities/auth/auth.service';
+import { authService } from '@/_entities/auth/auth.service';
 import { errorResponse, successResponse } from '@/_libs/responseHelper';
-import { Logger } from '@/_libs/tools/logger.tools';
 import { CookieHelper } from '@/_libs/tools/cookie.tools';
 import { JwtHelper } from '@/_libs/tools/jwt.tools';
+import { Logger } from '@/_libs/tools/logger.tools';
 
 // 로그아웃
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     // 쿠키에서 액세스 토큰 가져오기
     const accessToken = await CookieHelper.get<string>('access_token');
@@ -18,7 +16,7 @@ export async function POST(request: NextRequest) {
 
       if (tokenValidation.isValid && tokenValidation.user) {
         // AuthService를 통한 로그아웃 처리
-        await AuthService.signOut(tokenValidation.user.id);
+        await authService.signOut(tokenValidation.user.id);
       }
     }
 
@@ -27,7 +25,8 @@ export async function POST(request: NextRequest) {
     await CookieHelper.remove('refresh_token');
 
     return successResponse({
-      data: { message: '로그아웃되었습니다.', },
+      data: true,
+      message: '로그아웃되었습니다.',
       status: 200,
     });
   }

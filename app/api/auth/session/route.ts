@@ -1,12 +1,10 @@
-import type { NextRequest } from 'next/server';
-
-import { AuthService } from '@/_entities/auth/auth.service';
+import { authService } from '@/_entities/auth/auth.service';
 import { errorResponse, successResponse } from '@/_libs/responseHelper';
-import { Logger } from '@/_libs/tools/logger.tools';
 import { CookieHelper } from '@/_libs/tools/cookie.tools';
+import { Logger } from '@/_libs/tools/logger.tools';
 
 // 세션 검증
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // 쿠키에서 토큰 가져오기
     const accessToken = await CookieHelper.get<string>('access_token');
@@ -20,7 +18,7 @@ export async function GET(request: NextRequest) {
     }
 
     // AuthService를 통한 세션 검증
-    const sessionResult = await AuthService.verifySession(accessToken, refreshToken);
+    const sessionResult = await authService.verifySession(accessToken, refreshToken);
 
     if (!sessionResult.data) {
       // 세션이 유효하지 않은 경우 쿠키 제거

@@ -2,7 +2,7 @@ import type { UserWithOmitPassword } from '@/_entities/users';
 import { Api } from '@/_libs/tools/axios.tools';
 
 import type { AdminSignUpFormData } from './admin-sighup.form-model';
-import type { SignUpData, SignInData, AdminSignUpData } from './auth.types';
+import type { SignUpData, SignInData, AdminSignUpData, ForgotPasswordData, ResetPasswordData } from './auth.types';
 
 /**
  * 사용자 회원가입
@@ -35,7 +35,8 @@ export async function verifySession() {
  * @returns 로그아웃 결과
  */
 export async function signOut() {
-  return Api.postQuery<{ message: string }, Record<string, never>>('/auth/signout', {});
+  return Api.postQuery<{ data: boolean;
+    message: string; }, Record<string, never>>('/auth/signout', {});
 }
 
 /**
@@ -44,8 +45,8 @@ export async function signOut() {
  * @returns 관리자 회원가입 결과
  */
 export async function requestAdminSignUp(data: AdminSignUpFormData) {
-  return Api.postQuery<{ message: string;
-    data?: boolean; }, AdminSignUpFormData>('/auth/admin/signup', data);
+  return Api.postQuery<{ data: boolean;
+    message: string; }, AdminSignUpFormData>('/auth/admin/signup', data);
 }
 
 /**
@@ -55,4 +56,24 @@ export async function requestAdminSignUp(data: AdminSignUpFormData) {
  */
 export async function completeAdminSignUp(data: AdminSignUpFormData & { verificationCode: string }) {
   return Api.postQuery<UserWithOmitPassword, AdminSignUpData & { verificationCode: string }>('/auth/admin/signup', data);
+}
+
+/**
+ * 비밀번호 재설정 이메일 발송
+ * @param data 비밀번호 재설정 이메일 데이터
+ * @returns 비밀번호 재설정 이메일 발송 결과
+ */
+export async function sendResetPasswordEmail(data: ForgotPasswordData) {
+  return Api.postQuery<{ data: boolean;
+    message: string; }, ForgotPasswordData>('/auth/verify-email', data);
+}
+
+/**
+ * 비밀번호 재설정
+ * @param data 비밀번호 재설정 데이터
+ * @returns 비밀번호 재설정 결과
+ */
+export async function resetPassword(data: ResetPasswordData) {
+  return Api.postQuery<{ data: boolean;
+    message: string; }, ResetPasswordData>('/auth/reset-password', data);
 }

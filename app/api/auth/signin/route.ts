@@ -1,18 +1,18 @@
 import type { NextRequest } from 'next/server';
 
 import type { SignInData } from '@/_entities/auth';
-import { AuthService } from '@/_entities/auth/auth.service';
+import { authService } from '@/_entities/auth/auth.service';
 import { errorResponse, successResponse } from '@/_libs/responseHelper';
-import { Logger } from '@/_libs/tools/logger.tools';
 import { getServerConfig } from '@/_libs/tools/config.loader';
 import { CookieHelper } from '@/_libs/tools/cookie.tools';
+import { Logger } from '@/_libs/tools/logger.tools';
 
 // 사용자 로그인
 export async function POST(request: NextRequest) {
   try {
     const signInData: SignInData = await request.json();
 
-    const signInResult = await AuthService.signIn(signInData);
+    const signInResult = await authService.signIn(signInData);
 
     if (!signInResult.data) {
       return errorResponse({

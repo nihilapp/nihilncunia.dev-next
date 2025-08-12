@@ -4,3 +4,5 @@ export { useSignOut } from './useSignOut';
 export { useRequestAdminSignUp } from './useRequestAdminSignUp';
 export { useCompleteAdminSignUp } from './useCompleteAdminSignUp';
 export { useSession } from './useSession';
+export { useSendResetPasswordEmail } from './useSendResetPasswordEmail';
+export { useResetPassword } from './useResetPassword';

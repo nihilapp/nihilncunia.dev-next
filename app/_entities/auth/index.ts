@@ -4,7 +4,9 @@ export type {
   SignUpData,
   SignInData,
   AuthResult,
-  AdminSignUpData
+  AdminSignUpData,
+  ForgotPasswordData,
+  ResetPasswordData
 } from './auth.types';
 
 // Form models
@@ -18,6 +20,22 @@ export type {
   VerificationCodeData
 } from './admin-sighup.form-model';
 
+export {
+  forgotPasswordFormModel
+} from './forgot-password.form-model';
+
+export type {
+  ForgotPasswordFormData
+} from './forgot-password.form-model';
+
+export {
+  resetPasswordFormModel
+} from './reset-password.form-model';
+
+export type {
+  ResetPasswordFormData
+} from './reset-password.form-model';
+
 // Hooks
 export {
   useSignIn,
@@ -25,5 +43,7 @@ export {
   useSignOut,
   useRequestAdminSignUp,
   useCompleteAdminSignUp,
-  useSession
+  useSession,
+  useSendResetPasswordEmail,
+  useResetPassword
 } from './hooks';

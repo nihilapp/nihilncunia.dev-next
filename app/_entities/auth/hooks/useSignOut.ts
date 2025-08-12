@@ -5,7 +5,8 @@ import { signOut } from '@/_entities/auth/auth.api';
 import { useAuthStore } from '@/_entities/auth/auth.store';
 import type { MutationOptionType } from '@/_entities/common';
 
-interface UseSignOutOptions extends MutationOptionType<{ message: string }, void> {}
+interface UseSignOutOptions extends MutationOptionType<{ data: boolean;
+  message: string; }, void> {}
 
 export function useSignOut(options: UseSignOutOptions = {}) {
   const queryClient = useQueryClient();

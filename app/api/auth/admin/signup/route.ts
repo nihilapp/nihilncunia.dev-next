@@ -2,7 +2,7 @@ import type { NextRequest } from 'next/server';
 
 import { authMessage } from '@/_data';
 import type { AdminSignUpData } from '@/_entities/auth';
-import { AuthService } from '@/_entities/auth/auth.service';
+import { authService } from '@/_entities/auth/auth.service';
 import { errorResponse, successResponse } from '@/_libs/responseHelper';
 import { getServerConfig } from '@/_libs/tools/config.loader';
 import { Logger } from '@/_libs/tools/logger.tools';
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
         if (!verificationCode) {
           Logger.info('ADMIN_SIGNUP', '인증 코드 생성 및 발송 요청', { email: signUpData.email, });
           // 개발 환경에서도 설정 파일의 to 필드로 이메일 발송
-          const result = await AuthService.createAdminVerification();
+          const result = await authService.createAdminVerification();
           if (!result.data) {
             return errorResponse({
               message: result.message,
@@ -38,14 +38,15 @@ export async function POST(request: NextRequest) {
             });
           }
           return successResponse({
-            data: { message: result.message, },
+            data: true,
+            message: result.message,
             status: 200,
           });
         }
 
         // 인증 코드가 있는 경우: 코드 검증 및 관리자 계정 생성
         Logger.info('ADMIN_SIGNUP', '인증 코드 검증 및 계정 생성', { email: signUpData.email, });
-        const verifyResult = await AuthService.verifyAdminCode(verificationCode);
+        const verifyResult = await authService.verifyAdminCode(verificationCode);
         if (!verifyResult.data) {
           return errorResponse({
             message: verifyResult.message,
@@ -53,7 +54,7 @@ export async function POST(request: NextRequest) {
           });
         }
 
-        const signUpResult = await AuthService.signUpAdmin(signUpData);
+        const signUpResult = await authService.signUpAdmin(signUpData);
         if (!signUpResult.data) {
           return errorResponse({
             message: signUpResult.message,
@@ -69,7 +70,7 @@ export async function POST(request: NextRequest) {
 
       // 메일 발송이 비활성화되어 있으면 즉시 관리자 계정 생성
       Logger.info('ADMIN_SIGNUP', '개발 환경에서 메일 발송 비활성화, 즉시 계정 생성', { email: signUpData.email, });
-      const result = await AuthService.signUpAdmin(signUpData);
+      const result = await authService.signUpAdmin(signUpData);
       if (!result.data) {
         return errorResponse({
           message: result.message,
@@ -101,7 +102,7 @@ export async function POST(request: NextRequest) {
     // 2-1. 인증 코드가 없는 경우: 인증 코드 생성 및 발송 요청
     if (!verificationCode) {
       Logger.info('ADMIN_SIGNUP', '운영 환경에서 인증 코드 생성 및 발송 요청', { email: signUpData.email, });
-      const result = await AuthService.createAdminVerification();
+      const result = await authService.createAdminVerification();
       if (!result.data) {
         return errorResponse({
           message: result.message,
@@ -109,14 +110,15 @@ export async function POST(request: NextRequest) {
         });
       }
       return successResponse({
-        data: { message: result.message, },
+        data: true,
+        message: result.message,
         status: 200,
       });
     }
 
     // 2-2. 인증 코드가 있는 경우: 코드 검증 및 관리자 계정 생성
     Logger.info('ADMIN_SIGNUP', '운영 환경에서 인증 코드 검증 및 계정 생성', { email: signUpData.email, });
-    const verifyResult = await AuthService.verifyAdminCode(verificationCode);
+    const verifyResult = await authService.verifyAdminCode(verificationCode);
     if (!verifyResult.data) {
       return errorResponse({
         message: verifyResult.message,
@@ -124,7 +126,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const signUpResult = await AuthService.signUpAdmin(signUpData);
+    const signUpResult = await authService.signUpAdmin(signUpData);
     if (!signUpResult.data) {
       return errorResponse({
         message: signUpResult.message,

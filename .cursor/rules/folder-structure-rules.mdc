@@ -43,11 +43,14 @@ alwaysApply: true
   _entities/[entity명]/
   ├── index.ts                    # 엔티티의 모든 export를 관리
   ├── [entity명].api.ts           # API 호출 함수들 (React Query와 연동)
-  ├── [entity명].service.ts       # 비즈니스 로직 및 데이터베이스 작업
+  ├── [entity명].service.ts       # 메인 서비스 객체 (분리된 함수들을 객체로 export)
   ├── [entity명].store.ts         # 상태 관리 (Zustand 등)
   ├── [entity명].keys.ts          # React Query 쿼리 키 관리
   ├── [entity명].types.ts         # 타입 정의
   ├── [entity명].form-model.ts    # 폼 검증 스키마 (Zod)
+  ├── service/                    # 개별 서비스 함수들이 위치하는 폴더
+  │   ├── [function-name].service.ts  # 각 함수별 개별 파일
+  │   └── ...                     # 기타 서비스 함수들
   └── hooks/
       ├── index.ts                # 훅들의 export 관리
       └── use[Action][Entity].ts  # React Query 훅들
@@ -68,9 +71,17 @@ alwaysApply: true
 
 #### `[entity명].service.ts`
 
-- 비즈니스 로직 처리
-- 데이터베이스 작업 (Prisma 등)
-- API 라우트에서 호출되는 서비스 클래스/함수들
+- 메인 서비스 객체 (분리된 함수들을 객체로 export)
+- 각 개별 서비스 함수들을 import하여 객체로 묶어서 export
+- API 라우트에서 호출되는 서비스 객체
+
+#### `service/` 폴더
+
+- 개별 서비스 함수들이 위치하는 폴더
+- 각 함수는 독립적인 파일로 관리 (`[function-name].service.ts`)
+- 함수별로 명확한 책임 분리
+- 파일 크기 관리 및 가독성 향상
+- 테스트 용이성 및 협업 효율성 증대
 
 #### `[entity명].store.ts`
 
@@ -113,12 +124,14 @@ alwaysApply: true
 3. API 함수
    ↓ fetch/axios로 API 라우트 호출
 4. API 라우트 (/app/api/[entity]/route.ts)
-   ↓ [entity명].service.ts 함수 호출
-5. 서비스 함수
+   ↓ [entity명].service.ts 객체의 함수 호출
+5. 서비스 객체
+   ↓ service/[function-name].service.ts 함수 호출
+6. 개별 서비스 함수
    ↓ 데이터베이스 작업 (Prisma)
-6. 데이터베이스
+7. 데이터베이스
    ↓ 응답 반환
-7. 서비스 → API 라우트 → API 함수 → 훅 → 컴포넌트
+8. 개별 서비스 함수 → 서비스 객체 → API 라우트 → API 함수 → 훅 → 컴포넌트
 ```
 
 ### 데이터 흐름 예시
@@ -140,18 +153,46 @@ export async function getUsers() {
   return Api.getQuery<User[]>("/users");
 }
 
-// 4. API 라우트에서 서비스 호출
+// 4. API 라우트에서 서비스 객체 호출
 export async function GET() {
-  const users = await UserService.getAll();
+  const users = await userService.getAll();
   return successResponse({ data: users, status: 200 });
 }
 
-// 5. 서비스에서 데이터베이스 작업
-export class UserService {
-  static async getAll() {
-    return PrismaHelper.client.user.findMany();
-  }
+// 5. 서비스 객체에서 개별 서비스 함수 호출
+// users.service.ts
+export const userService = {
+  getAll: getAllUsers, // service/get-all-users.service.ts에서 import
+  create: createUser, // service/create-user.service.ts에서 import
+  // ... 기타 함수들
+};
+
+// 6. 개별 서비스 함수에서 데이터베이스 작업
+// service/get-all-users.service.ts
+export async function getAllUsers() {
+  return PrismaHelper.client.user.findMany();
 }
+```
+
+### 서비스 구조 예시 (Auth 엔티티)
+
+```typescript
+// _entities/auth/auth.service.ts
+import { signUp } from "./service/signup.service";
+import { signIn } from "./service/signin.service";
+import { verifySession } from "./service/verify-session.service";
+// ... 기타 import
+
+export const authService = {
+  signUp,
+  signIn,
+  verifySession,
+  // ... 기타 함수들
+};
+
+// 사용법
+import { authService } from "@/_entities/auth/auth.service";
+const result = await authService.signUp(userData);
 ```
 
 ## Export 규칙

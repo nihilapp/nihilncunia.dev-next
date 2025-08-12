@@ -24,6 +24,7 @@ export const authMessage = {
   // 비밀번호 재설정
   forgotPasswordSuccess: '비밀번호 찾기 이메일이 발송되었습니다.',
   forgotPasswordError: '비밀번호 찾기 실패',
+  forgotPasswordEmailSent: '임시 비밀번호가 이메일로 발송되었습니다.',
   newPasswordSuccess: '비밀번호 변경 성공',
   newPasswordError: '비밀번호 변경 실패',
   resetPasswordSuccess: '비밀번호 재설정 성공',
