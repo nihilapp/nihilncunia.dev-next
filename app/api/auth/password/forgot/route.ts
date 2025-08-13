@@ -1,11 +1,12 @@
 import type { NextRequest } from 'next/server';
 
+import { authMessage } from '@/_data';
 import type { ForgotPasswordData } from '@/_entities/auth';
 import { authService } from '@/_entities/auth/auth.service';
 import { errorResponse, successResponse } from '@/_libs/responseHelper';
 import { Logger } from '@/_libs/tools/logger.tools';
 
-// 비밀번호 재설정 이메일 발송 (임시 비밀번호 포함)
+// 비밀번호 재설정 이메일 발송 (토큰 기반)
 export async function POST(request: NextRequest) {
   try {
     const { email, }: ForgotPasswordData = await request.json();
@@ -17,15 +18,9 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const result = await authService.resetPasswordAndSendEmail(email);
+    const result = await authService.requestPasswordReset(email);
 
-    if (!result.data) {
-      return errorResponse({
-        message: result.message,
-        status: 400,
-      });
-    }
-
+    // 이메일 존재 여부와 관계없이 항상 성공으로 응답하여 보안 강화
     return successResponse({
       data: true,
       message: result.message,
@@ -33,11 +28,13 @@ export async function POST(request: NextRequest) {
     });
   }
   catch (error) {
-    Logger.error('VERIFY_EMAIL_API_ERROR', error);
+    Logger.error('FORGOT_PASSWORD_API_ERROR', error);
 
-    return errorResponse({
-      message: '임시 비밀번호 발송 중 오류가 발생했습니다.',
-      status: 500,
+    // 내부 서버 오류가 발생하더라도 사용자에게는 일관된 메시지 반환
+    return successResponse({
+      data: true,
+      message: authMessage.resetPasswordLinkSent,
+      status: 200,
     });
   }
 }

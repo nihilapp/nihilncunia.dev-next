@@ -6,7 +6,8 @@ export type {
   AuthResult,
   AdminSignUpData,
   ForgotPasswordData,
-  ResetPasswordData
+  ResetPasswordData,
+  ChangePasswordData
 } from './auth.types';
 
 // Form models

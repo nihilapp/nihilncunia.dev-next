@@ -10,9 +10,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 // 사용자 권한
@@ -102,11 +101,12 @@ model User {
   email_notifications Boolean @default(true) // 이메일 알림 수신 여부
 
   // 관계
-  comments         Comment[]
-  posts            Post[]
-  activities       GuestActivity[] // 구독자 활동 이력
-  guestBooks       GuestBook[] // 게스트북 작성 (USER/VISITOR)
-  guestBookReplies GuestBookReply[] // 게스트북 답글 (ADMIN)
+  comments            Comment[]
+  posts               Post[]
+  activities          GuestActivity[] // 구독자 활동 이력
+  guestBooks          GuestBook[] // 게스트북 작성 (USER/VISITOR)
+  guestBookReplies    GuestBookReply[] // 게스트북 답글 (ADMIN)
+  passwordResetTokens PasswordResetToken[] // 비밀번호 재설정 토큰
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -353,4 +353,37 @@ model GuestBookReply {
   @@index([admin_id])
   @@index([is_public])
   @@map("guest_book_replies")
+}
+
+// 비밀번호 재설정 토큰
+model PasswordResetToken {
+  id         String   @id @default(uuid())
+  user_id    String
+  token_hash String // 해시된 토큰
+  expires_at DateTime
+  used       Boolean  @default(false)
+  created_at DateTime @default(now())
+
+  // 관계
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([expires_at])
+  @@index([used])
+  @@map("password_reset_tokens")
+}
+
+// 관리자 인증 코드
+model AdminVerificationCode {
+  id         String   @id @default(uuid())
+  code_hash  String // 해시된 인증 코드
+  expires_at DateTime
+  used       Boolean  @default(false)
+  created_at DateTime @default(now())
+  ip_address String? // 요청한 IP 주소 (보안상 추적용)
+
+  @@index([expires_at])
+  @@index([used])
+  @@index([created_at])
+  @@map("admin_verification_codes")
 }

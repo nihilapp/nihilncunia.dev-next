@@ -34,3 +34,21 @@ export interface ResetPasswordData {
   newPassword: string;
   confirmPassword: string;
 }
+
+export interface TokenResetPasswordData {
+  token: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export interface ChangePasswordData {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+// 공통 API 응답 타입들
+export interface AuthApiResponse {
+  data: boolean;
+  message: string;
+}

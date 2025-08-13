@@ -1,24 +1,23 @@
 import type { NextRequest } from 'next/server';
 
-import type { ResetPasswordData } from '@/_entities/auth';
+import { authMessage } from '@/_data';
 import { authService } from '@/_entities/auth/auth.service';
+import type { TokenResetPasswordData } from '@/_entities/auth/auth.types';
 import { errorResponse, successResponse } from '@/_libs/responseHelper';
 import { Logger } from '@/_libs/tools/logger.tools';
 
-// 임시 비밀번호로 새 비밀번호 설정
+// 토큰을 사용하여 새 비밀번호 설정
 export async function POST(request: NextRequest) {
   try {
-    const { email, tempPassword, newPassword, confirmPassword, }: ResetPasswordData = await request.json();
+    const { email, token, newPassword, confirmPassword, }: TokenResetPasswordData & { email: string } = await request.json();
 
-    // 필수 필드 검증
-    if (!email || !tempPassword || !newPassword || !confirmPassword) {
+    if (!email || !token || !newPassword || !confirmPassword) {
       return errorResponse({
         message: '모든 필드를 입력해주세요.',
         status: 400,
       });
     }
 
-    // 새 비밀번호 확인 검증
     if (newPassword !== confirmPassword) {
       return errorResponse({
         message: '새 비밀번호와 확인 비밀번호가 일치하지 않습니다.',
@@ -26,7 +25,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // 비밀번호 복잡성 검증
+    // 비밀번호 복잡성 검증 (Zod 스키마로 이전하는 것을 권장)
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/;
     if (newPassword.length < 8 || !passwordRegex.test(newPassword)) {
       return errorResponse({
@@ -35,7 +34,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const result = await authService.resetPasswordWithTemp(email, tempPassword, newPassword);
+    const result = await authService.resetPassword(token, newPassword);
 
     if (!result.data) {
       return errorResponse({
@@ -54,7 +53,7 @@ export async function POST(request: NextRequest) {
     Logger.error('RESET_PASSWORD_API_ERROR', error);
 
     return errorResponse({
-      message: '비밀번호 재설정 중 오류가 발생했습니다.',
+      message: authMessage.resetPasswordError,
       status: 500,
     });
   }

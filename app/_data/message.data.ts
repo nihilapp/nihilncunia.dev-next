@@ -24,11 +24,12 @@ export const authMessage = {
   // 비밀번호 재설정
   forgotPasswordSuccess: '비밀번호 찾기 이메일이 발송되었습니다.',
   forgotPasswordError: '비밀번호 찾기 실패',
-  forgotPasswordEmailSent: '임시 비밀번호가 이메일로 발송되었습니다.',
+  resetPasswordLinkSent: '비밀번호 재설정 링크가 이메일로 발송되었습니다.',
   newPasswordSuccess: '비밀번호 변경 성공',
   newPasswordError: '비밀번호 변경 실패',
   resetPasswordSuccess: '비밀번호 재설정 성공',
   resetPasswordError: '비밀번호 재설정 실패',
+  invalidOrExpiredToken: '유효하지 않거나 만료된 토큰입니다.',
 
   // 이메일 인증
   signupEmailVerifySuccess: '이메일 인증 성공',

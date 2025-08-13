@@ -146,6 +146,57 @@ export class Api {
   }
 
   /**
+   * POST 요청을 수행하고 응답 데이터만 반환합니다. (스마트 타입 추론)
+   * 반환 타입만 지정하면 요청 데이터 타입은 자동으로 추론됩니다.
+   */
+  static async postData<D>(
+    url: string,
+    postData?: unknown
+  ): Promise<SuccessPayload<D>>;
+  static async postData<D, P>(
+    url: string,
+    postData: P
+  ): Promise<SuccessPayload<D>>;
+  static async postData<D, P = unknown>(
+    url: string,
+    postData: P
+  ) {
+    const { data, } = await this.post<D, P>(
+      url,
+      postData
+    );
+    return data;
+  }
+
+  /**
+   * PATCH 요청을 수행하고 응답 데이터만 반환합니다. (스마트 타입 추론)
+   */
+  static async patchData<D, P = unknown>(
+    url: string,
+    patchData: P
+  ) {
+    const { data, } = await this.patch<D, P>(
+      url,
+      patchData
+    );
+    return data;
+  }
+
+  /**
+   * PUT 요청을 수행하고 응답 데이터만 반환합니다. (스마트 타입 추론)
+   */
+  static async putData<D, P = unknown>(
+    url: string,
+    putData: P
+  ) {
+    const { data, } = await this.put<D, P>(
+      url,
+      putData
+    );
+    return data;
+  }
+
+  /**
    * PATCH 요청을 수행하고 응답 데이터만 반환합니다.
    */
   static async patchQuery<D, P>(

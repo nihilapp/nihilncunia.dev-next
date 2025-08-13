@@ -3,6 +3,7 @@ import type { NextRequest } from 'next/server';
 import { authMessage } from '@/_data';
 import type { AdminSignUpData } from '@/_entities/auth';
 import { authService } from '@/_entities/auth/auth.service';
+import { userService } from '@/_entities/users/users.service';
 import { errorResponse, successResponse } from '@/_libs/responseHelper';
 import { getServerConfig } from '@/_libs/tools/config.loader';
 import { Logger } from '@/_libs/tools/logger.tools';
@@ -54,7 +55,7 @@ export async function POST(request: NextRequest) {
           });
         }
 
-        const signUpResult = await authService.signUpAdmin(signUpData);
+        const signUpResult = await userService.createAdminUser(signUpData);
         if (!signUpResult.data) {
           return errorResponse({
             message: signUpResult.message,
@@ -70,7 +71,7 @@ export async function POST(request: NextRequest) {
 
       // 메일 발송이 비활성화되어 있으면 즉시 관리자 계정 생성
       Logger.info('ADMIN_SIGNUP', '개발 환경에서 메일 발송 비활성화, 즉시 계정 생성', { email: signUpData.email, });
-      const result = await authService.signUpAdmin(signUpData);
+      const result = await userService.createAdminUser(signUpData);
       if (!result.data) {
         return errorResponse({
           message: result.message,
@@ -126,7 +127,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const signUpResult = await authService.signUpAdmin(signUpData);
+    const signUpResult = await userService.createAdminUser(signUpData);
     if (!signUpResult.data) {
       return errorResponse({
         message: signUpResult.message,

@@ -1,123 +1,31 @@
-import { userMessage } from '@/_data';
-import type { PrismaReturn } from '@/_entities/common';
-import { Logger } from '@/_libs/tools/logger.tools';
-import { PrismaHelper } from '@/_libs/tools/prisma.tools';
-import type { User } from '@/_prisma';
+import type { UserServiceType } from './service/user.service.interface';
+import { UserFactory } from './user.factory';
 
-export class UserService {
-  /**
-   * 사용자 아이디로 사용자 가져오기
-   * @param userId 사용자 아이디
-   * @returns 사용자
-   */
-  static async getUserById(userId: string): PrismaReturn<Omit<User, 'password_hash' | 'refresh_token'> | null> {
-    try {
-      const user = await PrismaHelper.client.user.findUnique({
-        where: {
-          id: userId,
-        },
-        omit: {
-          password_hash: true,
-          refresh_token: true,
-        },
-      });
+const userServiceInstance = UserFactory.getUserService();
 
-      if (!user) {
-        return {
-          data: null,
-          message: userMessage.userNotFound,
-        };
-      }
+/**
+ * User 도메인의 통합 서비스 객체
+ * Factory 패턴을 통해 의존성 주입된 Service 인스턴스 사용
+ * 사용자 엔티티 관련 모든 비즈니스 로직을 담당 (조회, 생성, 업데이트)
+ *
+ * 타입 안전성을 보장하기 위해 화살표 함수로 메서드를 래핑
+ */
+export const userService: UserServiceType = {
+  // 사용자 조회 관련 메서드들
+  getUserById: (id: string) => userServiceInstance.getUserById(id),
+  getUserByEmail: (email: string) => userServiceInstance.getUserByEmail(email),
+  getUserByEmailWithPassword: (email: string) => userServiceInstance.getUserByEmailWithPassword(email),
+  getUserByIdWithPassword: (id: string) => userServiceInstance.getUserByIdWithPassword(id),
 
-      return {
-        data: user,
-        message: userMessage.getDetailSuccess,
-      };
-    }
-    catch (error) {
-      Logger.error('USER_GET_BY_ID_ERROR', error);
+  // 사용자 생성 관련 메서드들
+  createUser: (signUpData) => userServiceInstance.createUser(signUpData),
+  createAdminUser: (signUpData) => userServiceInstance.createAdminUser(signUpData),
 
-      return {
-        data: null,
-        message: userMessage.getDetailError,
-      };
-    }
-  }
-
-  /**
-   * 이메일로 사용자 가져오기
-   * @param email 이메일
-   * @returns 사용자
-   */
-  static async getUserByEmail(email: string): PrismaReturn<Omit<User, 'password_hash' | 'refresh_token'> | null> {
-    try {
-      const user = await PrismaHelper.client.user.findUnique({
-        where: {
-          email,
-        },
-        omit: {
-          password_hash: true,
-          refresh_token: true,
-        },
-      });
-
-      if (!user) {
-        return {
-          data: null,
-          message: userMessage.emailNotFound,
-        };
-      }
-
-      return {
-        data: user,
-        message: userMessage.getDetailSuccess,
-      };
-    }
-    catch (error) {
-      Logger.error('USER_GET_BY_EMAIL_ERROR', error);
-
-      return {
-        data: null,
-        message: userMessage.getDetailError,
-      };
-    }
-  }
-
-  /**
-   * 이메일로 사용자 가져오기 (비밀번호 포함)
-   * @param email 이메일
-   * @returns 사용자 (비밀번호 포함)
-   */
-  static async getUserByEmailWithPassword(email: string): PrismaReturn<Omit<User, 'refresh_token'> | null> {
-    try {
-      const user = await PrismaHelper.client.user.findUnique({
-        where: {
-          email,
-        },
-        omit: {
-          refresh_token: true,
-        },
-      });
-
-      if (!user) {
-        return {
-          data: null,
-          message: userMessage.emailNotFound,
-        };
-      }
-
-      return {
-        data: user,
-        message: userMessage.getDetailSuccess,
-      };
-    }
-    catch (error) {
-      Logger.error('USER_GET_BY_EMAIL_WITH_PASSWORD_ERROR', error);
-
-      return {
-        data: null,
-        message: userMessage.getDetailError,
-      };
-    }
-  }
-}
+  // 사용자 정보 업데이트 관련 메서드들
+  changePassword: (userId, changePasswordData) =>
+    userServiceInstance.changePassword(userId, changePasswordData),
+  updateRefreshToken: (userId, refreshToken) =>
+    userServiceInstance.updateRefreshToken(userId, refreshToken),
+  updatePassword: (userId, hashedPassword) =>
+    userServiceInstance.updatePassword(userId, hashedPassword),
+};

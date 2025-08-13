@@ -1,3 +1,4 @@
 export type {
-  UserWithOmitPassword
+  UserWithOmitPassword,
+  UserWithPassword
 } from './users.types';

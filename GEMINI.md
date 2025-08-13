@@ -1,6 +1,6 @@
-# Gemini Development Guide
+# Gemini Development Guide (v2)
 
-이 문서는 프로젝트의 일관성, 유지보수성, 협업 효율을 높이기 위한 개발 가이드입니다. 모든 개발자는 이 규칙을 숙지하고 준수해야 합니다.
+이 문서는 프로젝트의 일관성, 유지보수성, 협업 효율을 높이기 위한 최신 개발 가이드입니다. 모든 개발자는 이 규칙을 숙지하고 준수해야 합니다.
 
 ---
 
@@ -32,23 +32,39 @@
 - **라우트별 폴더**: 각 라우트 폴더(`app/posts` 등) 내에 해당 라우트에서만 사용하는 `_components`, `_layouts`를 둘 수 있습니다.
 - **`index.ts`**: 각 폴더에는 `index.ts` 파일을 두어 내부 모듈을 명시적으로 export 합니다.
 
-### 2.2. 엔티티(`_entities`) 폴더 구조
+### 2.2. 엔티티(`_entities`) 폴더 구조 (Service/DAO 패턴 적용)
 
-각 엔티티는 도메인별로 파일을 분리하여 관리합니다.
+각 엔티티는 **Service/DAO 레이어 분리 패턴**을 따릅니다. 이는 비즈니스 로직과 데이터 접근 로직을 명확히 분리하여 유지보수성과 테스트 용이성을 극대화합니다.
 
 ```
 _entities/[entity명]/
-├── index.ts                    # 엔티티의 모든 export 관리
-├── [entity명].api.ts           # API 호출 함수 (클라이언트 사이드)
-├── [entity명].service.ts       # 비즈니스 로직 및 DB 작업 (서버 사이드)
-├── [entity명].store.ts         # 클라이언트 상태 관리 (Zustand)
+├── index.ts                    # 엔티티의 모든 public 모듈 export
+├── [entity명].api.ts           # API 호출 함수 (클라이언트)
 ├── [entity명].keys.ts          # React Query 쿼리 키
 ├── [entity명].types.ts         # TypeScript 타입 정의
+├── [entity명].store.ts         # 클라이언트 상태 관리 (Zustand)
 ├── [entity명].form-model.ts    # 폼 유효성 검사 스키마 (Zod)
-└── hooks/
-    ├── index.ts
-    └── use[Action][Entity].ts  # React Query 커스텀 훅
+|
+├── hooks/                      # React Query 커스텀 훅
+│   ├── index.ts
+│   └── use[Action][Entity].ts
+|
+├── service/                    # ⭐️ 비즈니스 로직 레이어
+│   ├── [entity명].service.interface.ts
+│   └── [entity명].service.ts
+|
+├── dao/                        # ⭐️ 데이터 접근 레이어
+│   ├── [entity명].dao.interface.ts
+│   └── [entity명].dao.ts
+|
+├── [entity명].factory.ts       # ⭐️ 의존성 주입(DI) 컨테이너
+└── [entity명].service.ts       # ⭐️ 통합 서비스 객체 (외부 노출용)
 ```
+
+- **`dao`**: 데이터베이스에 직접 접근하는 로직(Prisma 호출)만 담당합니다.
+- **`service`**: `dao`를 주입받아 비즈니스 로직을 처리합니다. **절대 DB에 직접 접근하지 않습니다.**
+- **`factory`**: `dao`와 `service`의 인스턴스를 생성하고 의존성을 주입하는 역할을 합니다.
+- **통합 `service.ts`**: `factory`에서 생성된 서비스 인스턴스를 받아 외부에서 사용할 수 있도록 노출하는 창구입니다.
 
 ---
 
@@ -133,14 +149,24 @@ export type SignInFormData = z.infer<typeof signInFormModel>;
 
 ### 5.1. API 라우트 (`/app/api/...`)
 
-- **파일**: API 엔드포인트는 `route.ts` 파일로 작성합니다.
+- **역할**: API 엔드포인트는 **Controller**의 역할을 수행합니다. 요청 데이터를 검증하고, `authService`와 같은 통합 서비스 객체를 호출하여 비즈니스 로직을 위임합니다.
 - **응답**: `successResponse`와 `errorResponse` 헬퍼를 사용하여 일관된 응답 구조를 유지합니다.
-- **에러 처리**: 모든 핸들러는 `try-catch`로 감싸고, `Logger`로 에러를 기록합니다. HTTP 상태 코드는 규칙에 맞게 사용합니다 (400, 401, 404, 409, 500 등).
+- **에러 처리**: 모든 핸들러는 `try-catch`로 감싸고, `Logger`로 에러를 기록합니다.
 
-### 5.2. 서비스 레이어 (`.service.ts`)
+### 5.2. 아키텍처 (Service/DAO 패턴)
 
-- **역할**: 데이터베이스 접근, 비즈니스 로직 처리를 담당합니다. API 라우트는 서비스를 호출하는 역할만 수행합니다.
-- **Prisma**: `PrismaHelper.client`를 통해 Prisma 클라이언트에 접근합니다.
+- **Service 레이어 (`service/*.service.ts`)**:
+    - **역할**: 순수한 **비즈니스 로직**을 담당합니다.
+    - **구현**: `AuthServiceType`과 같은 인터페이스를 정의하고, 이를 구현하는 클래스를 작성합니다.
+    - **의존성**: 생성자를 통해 `AuthDaoType` 인터페이스를 주입받아 사용하며, DB에 직접 접근하지 않습니다.
+
+- **DAO 레이어 (`dao/*.dao.ts`)**:
+    - **역할**: 순수한 **데이터 접근 로직**을 담당합니다.
+    - **구현**: `AuthDaoType` 인터페이스를 정의하고, `PrismaHelper.client`를 사용하여 실제 DB 작업을 수행하는 클래스를 작성합니다.
+
+- **Factory (`[entity].factory.ts`)**:
+    - **역할**: **의존성 주입(DI)** 컨테이너 역할을 합니다.
+    - **구현**: Service와 DAO의 인스턴스를 `private static`으로 생성하고, 생성자를 통해 Service에 DAO를 주입합니다. 외부에서는 `getAuthService()`와 같은 static 메서드를 통해 싱글턴 인스턴스를 제공받습니다.
 
 ### 5.3. 데이터베이스 (Prisma Schema)
 
@@ -148,12 +174,19 @@ export type SignInFormData = z.infer<typeof signInFormModel>;
 - **컬럼**: 컬럼명은 `snake_case`를 사용합니다.
 - **ID**: 모든 테이블의 ID는 `String` 타입의 `uuid`를 사용합니다.
 - **관계**: 관계 설정 시 `onDelete: Cascade`를 적용하여 데이터 무결성을 유지합니다.
+- **신규 테이블**:
+    - `PasswordResetToken`: 보안 강화된 비밀번호 재설정을 위해 추가되었습니다.
+    - `AdminVerifyHistory`: 2단계 관리자 인증 이력을 관리합니다.
 
-### 5.4. 보안
+### 5.4. 보안 강화 사항
 
-- **비밀번호**: `BcryptHelper`를 사용하여 비밀번호를 해싱(`dataToHash`)하고 비교(`dataCompare`)합니다.
-- **권한 확인**: 민감한 작업을 수행하기 전에 반드시 사용자 권한을 확인합니다.
-- **정보 노출**: 응답 데이터에서 비밀번호 해시, 리프레시 토큰 등 민감한 정보를 제외합니다.
+- **권한 상승 방지**: 일반 회원가입(`signUp`) 시 `AuthService`에서 `role`을 `'USER'`로 강제하여, API 요청 조작을 통한 관리자 계정 생성 취약점을 원천 차단했습니다.
+- **안전한 관리자 생성**: 운영 환경에서는 `POST /api/auth/admin/signup` 요청 시, 슈퍼 관리자 이메일로 2단계 인증 코드를 발송하고 검증해야만 관리자 계정이 생성됩니다.
+- **비밀번호 재설정**:
+    - 임시 비밀번호 대신, **만료 시간(15분)이 있는 일회용 토큰**을 사용합니다.
+    - 토큰은 `PasswordResetToken` 테이블에 **해시된 값으로 저장**되어 탈취 시에도 안전합니다.
+    - 이메일 존재 여부를 추측할 수 없도록, 존재하지 않는 이메일 요청에도 동일한 성공 메시지를 반환합니다.
+- **비밀번호 해싱**: `BcryptHelper`를 사용하여 비밀번호를 안전하게 해싱(`dataToHash`)하고 비교(`dataCompare`)합니다.
 
 ---
 
